@@ -28,7 +28,7 @@ model Product {
   image_url         String
   size              String?
   color             String?
-  dicount           Float?
+  discount          Float?
   sponsored         Boolean?
   rating            Decimal?
   createdAt         DateTime         @default(now())
