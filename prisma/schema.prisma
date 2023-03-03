@@ -17,6 +17,7 @@ model User {
   password  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  image_url String?
 }
 
 model Product {
@@ -28,7 +29,7 @@ model Product {
   size              String?
   color             String?
   dicount           Float?
-  sponsered         Boolean?
+  sponsored         Boolean?
   rating            Decimal?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
