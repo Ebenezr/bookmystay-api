@@ -92,9 +92,6 @@ async function seed() {
     },
     {
       name: "Vegetable Oil",
-      code: "VB01",
-      image_url:
-        "https://res.cloudinary.com/dbkeoqmg5/image/upload/v1677308674/eeksfq1fiipbstvkwvfz.png",
       products: {
         create: {
           name: "Rina",
