@@ -3,6 +3,7 @@ import * as z from "zod";
 export const createUserSchema = z.object({
   name: z.string({ required_error: "Name is required" }),
   email: z.string({ required_error: "Email is required" }),
+  image_url:z.string()
 });
 
 export const loginUserSchema = z.object({
