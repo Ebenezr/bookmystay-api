@@ -36,6 +36,7 @@ ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=postgres
 ENV POSTGRES_DB=kapaoil_DB
 ENV REDIS_HOST=localhost
+ENV DATABASE_URL=postgresql://postgres:postgres@postgres:5432/esoko_DB?schema=public&connect_timeout=300
 ENV REDIS_PORT=6379
 ENV CLOUDINARY_CLOUD_NAME=dbkeoqmg5
 ENV CLOUDINARY_API_KEY=784643547226384

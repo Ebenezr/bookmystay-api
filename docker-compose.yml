@@ -3,12 +3,13 @@ services:
   postgres-db:
     image: postgres:14.1-alpine
     container_name: postgres-db
+    hostname: postgres
     ports:
       - 5432:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: kapaoil_DB
+      POSTGRES_DB: esoko_DB
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: always
@@ -17,6 +18,7 @@ services:
 
   redis:
     image: redis:alpine
+    hostname: redis
     container_name: redis
     ports:
       - '6379:6379'
@@ -26,6 +28,7 @@ services:
       - 6379
 
   api-service:
+    stdin_open: true
     build: .
     container_name: api-service
     links:
