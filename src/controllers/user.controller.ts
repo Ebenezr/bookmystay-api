@@ -2,11 +2,10 @@ import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { AnyZodObject } from "zod";
 import { createUserSchema } from "../schemas/user.schema";
-const redis = require("redis");
-const cache = require("express-redis-cache")();
+
 
 // create client with URL
-const client = redis.createClient("redis://host.docker.internal:6379");
+
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 const router = Router();
