@@ -1,18 +1,19 @@
 # Esoko Ecommerce Admin
 
 ## Author: Bukosia Ebenezar
+
 ## Project Description
 
 this is a admin page for ecommerce site to enable user to view products , edit existing products, delete products and add new products.
-
 
 ## SCREENSHOTS
 
 #### ![image](https://user-images.githubusercontent.com/37300065/222905573-ed5f94bd-0d1e-47a6-8afe-4a349de5db0a.png)
 
-
 ## Technologies
+
 ### Front end
+
 * Nextjs(Typescript)
 * Tailwindcss
 * Zustand(State manager)
@@ -23,21 +24,22 @@ this is a admin page for ecommerce site to enable user to view products , edit e
 * Prisma
 * Postgresql
 
-
 ## Features
+
 - User can View all products
-- user can add new products
-- user can edit an existing product
-- user can delete a product
-- user can view company stats
+* user can add new products
+* user can edit an existing product
+* user can delete a product
+* user can view company stats
+
 ## How to set up and run
 
 ### Dependencies
 
-- yarn
-- node 16
-- npm
-- docker
+* yarn
+* node 16
+* npm
+* docker
 
 ## setup
 
@@ -77,7 +79,6 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
 #### API (Nodejs)
 
 clone the repo using the command
@@ -109,6 +110,7 @@ run postgresql and redis database
 ```shell
 docker-compose up -d
 ```
+
 run api server
 
 ```shell
@@ -119,7 +121,7 @@ yarn dev
 
 ## Copyright
 
-Copyright[c](2023)[bukosia ebenezar]
+Copyright[c][2023](bukosia ebenezar)
 
 ---
 
