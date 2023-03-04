@@ -44,4 +44,6 @@ ENV CLOUDINARY_API_SECRET=8kI5-lZFW4b6dRhbXS0PI1hO51Y
 
 EXPOSE 5000
 
-CMD ["/bin/sh", "sleep 20 && npm run start:prod"]
+CMD ["/bin/sh","-c", "sleep 20 && npm run start:prod"]
+
+
