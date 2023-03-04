@@ -23,6 +23,8 @@ this is a admin page for ecommerce site to enable user to view products , edit e
 * Nodejs(Typescript)
 * Prisma
 * Postgresql
+* Cloudinary(Image storage)
+* redis(cache)
 
 ## Features
 
