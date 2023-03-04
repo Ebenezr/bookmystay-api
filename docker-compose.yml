@@ -40,8 +40,8 @@ services:
     ports:
       - "5000:5000"
     restart: always
-    command:
-      npm run start:prod
+    # command:
+      # npm run start:prod
     volumes:
       - .:/home/node/api
       - node_modules:/home/node/api/node_modules
