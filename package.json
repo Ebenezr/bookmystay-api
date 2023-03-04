@@ -8,8 +8,8 @@
     "prisma": "prisma",
     "build": "tsc",
     "start:prod": "npm run generate:prisma && npm run dist/index.js",
-    "generate:prisma": "npx prisma migrate dev --name init && npm run seed",
-    "seed": "npx prisma db seed"
+    "generate:prisma": "npx prisma migrate dev --name init && npm run seed ",
+    "seed": "npx prisma db seed --accept-data-loss"
   },
   "prisma": {
     "seed": "ts-node ./prisma/seed.ts"
