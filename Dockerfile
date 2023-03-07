@@ -9,7 +9,7 @@ RUN yarn install  --only=development
 
 COPY . .
 
-RUN apt-get update -y \ && apt-get install -y openssl
+# RUN apt-get update -y \ && apt-get install -y openssl
 
 RUN yarn build
 
