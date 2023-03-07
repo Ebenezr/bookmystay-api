@@ -1,4 +1,4 @@
-FROM node:19-alpine AS development
+FROM node:18-slim AS development
 
 WORKDIR /usr/src/app
 
@@ -9,10 +9,12 @@ RUN yarn install  --only=development
 
 COPY . .
 
+RUN apt-get update -y \ && apt-get install -y openssl
+
 RUN yarn build
 
 
-FROM node:19-alpine AS production
+FROM node:18-slim AS production
 
 WORKDIR /usr/src/app
 
