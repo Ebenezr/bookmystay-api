@@ -3,12 +3,11 @@ import { PrismaClient } from "@prisma/client";
 import multerMiddleware from "../middleware/multer.middleware";
 import cloudinary from "cloudinary";
 
-
-const redis = require("redis");
-const cache = require("express-redis-cache")();
+// const redis = require("redis");
+// const cache = require("express-redis-cache")();
 
 // create client with URL
-const client = redis.createClient("redis://localhost:6379");
+// const client = redis.createClient("redis://localhost:6379");
 
 const prisma = new PrismaClient();
 const router = Router();

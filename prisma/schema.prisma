@@ -26,7 +26,7 @@ model Product {
   description       String?
   supplier          String?
   price             Float
-  image_url         String
+  image_url         String?
   size              String?
   color             String?
   discount          Float?

@@ -1,22 +1,22 @@
 version: "3.9"
 services:
-  api-service:
-    stdin_open: true
-    build:
-      context: .
-    container_name: api-service
-    ports:
-      - "5000:5000"
-    environment:
-      - EXTERNAL_PORT=5000
-      - DATABASE_URL=postgresql://postgres:postgres@postgres-db-soko:5432/esoko_DB?schema=public&connection_timeout=300
-      - POSTGRES_HOST=postgres-db-soko
-    restart: always
-    networks:
-      - gateway
-    volumes:
-      - .:/home/node/api
-      - node_modules:/home/node/api/node_modules
+  # api-service:
+  #   stdin_open: true
+  #   build:
+  #     context: .
+  #   container_name: api-service
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - EXTERNAL_PORT=5000
+  #     - DATABASE_URL=postgresql://postgres:postgres@postgres-db-soko:5432/esoko_DB?schema=public&connection_timeout=300
+  #     - POSTGRES_HOST=postgres-db-soko
+  #   restart: always
+  #   networks:
+  #     - gateway
+  #   volumes:
+  #     - .:/home/node/api
+  #     - node_modules:/home/node/api/node_modules
   postgres-db-soko:
     image: postgres:14.1-alpine
     container_name: postgres-db-soko
