@@ -24,6 +24,16 @@ router.post(
         const image = await cloudinary.v2.uploader.upload(req.file.path);
         data.image_url = image.secure_url;
       }
+
+      // Convert string values to numbers
+      data.price = parseInt(data.price);
+      data.rating = parseInt(data.rating);
+      data.productCategoryId = parseInt(data.productCategoryId);
+      data.discount = parseInt(data.discount);
+
+      // Convert boolean strings to boolean values
+      data.sponsored = JSON.parse(data.sponsored);
+
       const product = await prisma.product.create({ data });
       res.json(product);
     } catch (error) {
@@ -62,6 +72,15 @@ router.patch(
       }
       // const product = await prisma.product.create({ data });
       // res.json(product);
+
+      // Convert string values to numbers
+      data.price = parseInt(data.price);
+      data.rating = parseInt(data.rating);
+      data.productCategoryId = parseInt(data.productCategoryId);
+      data.discount = parseInt(data.discount);
+
+      // Convert boolean strings to boolean values
+      data.sponsored = JSON.parse(data.sponsored);
 
       const product = await prisma.product.update({
         where: { id: Number(id) },
