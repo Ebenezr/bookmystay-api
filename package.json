@@ -7,7 +7,7 @@
     "dev": "nodemon --config nodemon.json src/index.ts",
     "prisma": "prisma",
     "build": "tsc",
-    "start:prod": "node ./dist/index.js",
+    "start:prod": "node dist/index.js",
     "generate:prisma": "npx prisma migrate dev --name init && npm run seed ",
     "seed": "ts-node ./prisma/seed.ts --accept-data-loss"
   },
