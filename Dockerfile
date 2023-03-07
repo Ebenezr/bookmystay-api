@@ -30,13 +30,13 @@ COPY --from=development /usr/src/app/dist ./dist
 #     Description="Lightweight container with Node 19 based on Alpine Linux"
 
 # Set environment variables for your PostgreSQL and Redis databases
-ENV POSTGRES_HOST=localhost
+ENV POSTGRES_HOST=postgres-db-soko
 ENV POSTGRES_PORT=5432
 ENV POSTGRES_USER=postgres
 ENV POSTGRES_PASSWORD=postgres
-ENV POSTGRES_DB=kapaoil_DB
+ENV POSTGRES_DB=esoko_DB
 ENV REDIS_HOST=localhost
-ENV DATABASE_URL=postgresql://postgres:postgres@postgres:5432/esoko_DB?schema=public&connect_timeout=300
+ENV DATABASE_URL=postgresql://postgres:postgres@postgres-db-soko:5432/esoko_DB?schema=public&connect_timeout=300
 ENV REDIS_PORT=6379
 ENV CLOUDINARY_CLOUD_NAME=dbkeoqmg5
 ENV CLOUDINARY_API_KEY=784643547226384
