@@ -99,8 +99,25 @@ router.get(
 
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const products = await prisma.product.findMany();
-      res.json(products);
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const itemsPerPage = parseInt(req.query.limit as string, 20) || 20;
+
+      const startIndex = (page - 1) * itemsPerPage; // Calculate the starting index for the current page
+      const endIndex = startIndex + itemsPerPage; // Calculate the ending index for the current page
+      const products = await prisma.product.findMany({
+        skip: startIndex,
+        take: itemsPerPage,
+      });
+
+      const totalItems = await prisma.product.count();
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / itemsPerPage),
+        itemsPerPage: itemsPerPage,
+        totalItems: totalItems,
+        items: products.slice(0, endIndex),
+      });
     } catch (error) {
       next(error);
     }
