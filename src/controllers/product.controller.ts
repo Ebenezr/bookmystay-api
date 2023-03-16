@@ -102,8 +102,8 @@ router.get(
       const page = parseInt(req.query.page as string, 10) || 1;
       const itemsPerPage = parseInt(req.query.limit as string, 20) || 20;
 
-      const startIndex = (page - 1) * itemsPerPage; // Calculate the starting index for the current page
-      const endIndex = startIndex + itemsPerPage; // Calculate the ending index for the current page
+      const startIndex = (page - 1) * itemsPerPage; // Get the starting index for the current page
+      const endIndex = startIndex + itemsPerPage; // Get ending index for the current page
       const products = await prisma.product.findMany({
         skip: startIndex,
         take: itemsPerPage,
