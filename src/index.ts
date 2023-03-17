@@ -3,6 +3,7 @@ import router from "./routes/routes";
 
 const dotenv = require("dotenv");
 const cors = require("cors");
+const morgan = require("morgan");
 
 const express = require("express");
 const app = express();
@@ -18,6 +19,7 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ status: "API is running on /api" });
 });
 
+app.use(morgan("dev"));
 // setup cors
 app.use(cors());
 app.use(router);

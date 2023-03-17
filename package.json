@@ -1,7 +1,7 @@
 {
-  "name": "ecommerce-api",
+  "name": "bookmystay-api",
   "version": "1.0.0",
-  "description": "ecommerce nodejs api",
+  "description": "bookmystay nodejs express api",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/index.ts",
