@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import productRouter from "../controllers/product.controller";
+import guestRouter from "../controllers/guest.controller";
 
 
 const router = Router();
 
-router.use("/api", productRouter);
+router.use("/api/v1", guestRouter);
 
 
 export default router;
