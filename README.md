@@ -1,14 +1,13 @@
-# Esoko Ecommerce Admin
+# Book my Stay
 
 ## Author: Bukosia Ebenezar
 
 ## Project Description
 
-this is a admin page for ecommerce site to enable user to view products , edit existing products, delete products and add new products.
+
 
 ## SCREENSHOTS
 
-#### ![image](https://user-images.githubusercontent.com/37300065/222905573-ed5f94bd-0d1e-47a6-8afe-4a349de5db0a.png)
 
 ## Technologies
 
@@ -28,11 +27,6 @@ this is a admin page for ecommerce site to enable user to view products , edit e
 
 ## Features
 
-- User can View all products
-* user can add new products
-* user can edit an existing product
-* user can delete a product
-* user can view company stats
 
 ## How to set up and run
 
@@ -52,13 +46,13 @@ this is a admin page for ecommerce site to enable user to view products , edit e
 clone the repo using the command
 
 ```shell
-git clone https://github.com/Ebenezr/ecommerce-client-app.git
+git clone https://github.com/Ebenezr/
 ```
 
 change directory using command
 
 ```shell
-cd ecommerce-client-app
+cd buymystay-app
 ```
 
 open project in vscode text editor
@@ -86,13 +80,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 clone the repo using the command
 
 ```shell
-git clone https://github.com/Ebenezr/ecommerce-api.git
+git clone https://github.com/Ebenezr/
 ```
 
 change directory using command
 
 ```shell
-cd ecommerce-api
+cd buymystay-api
 ```
 
 open project in vscode texteditor
@@ -136,4 +130,4 @@ Copyright[c][2023](bukosia ebenezar)
 ## [License](LICENSE)
 
 MIT License
-Copyright (c) 2022 Bukosia Ebenezar
+Copyright (c) 2023 Bukosia Ebenezar
