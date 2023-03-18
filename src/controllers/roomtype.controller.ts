@@ -1,24 +1,17 @@
-import cloudinary from "cloudinary";
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import multerMiddleware from "../middleware/multer.middleware";
 
 const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
-// create new room
+// create new roomtype
 router.post(
-  "/rooms",
-  multerMiddleware.single("image"),
+  "/roomtypes",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      if (req.file) {
-        const image = await cloudinary.v2.uploader.upload(req.file.path);
-        data.image_url = image.secure_url;
-      }
-      const result = await prisma.room.create({ data });
+      const result = await prisma.roomType.create({ data });
       res.json(result);
     } catch (error) {
       next(error);
@@ -26,67 +19,65 @@ router.post(
   }
 );
 
-// delete a room
+// delete a roomtype
 router.delete(
-  `/room/:id`,
+  `/roomtype/:id`,
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const room = await prisma.room.delete({
+      const roomType = await prisma.roomType.delete({
         where: { id: Number(id) },
       });
-      res.json(room);
+      res.json(roomType);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// update room
+// update roomtype
 router.patch(
-  "/room/:id",
-  multerMiddleware.single("image"),
+  "/roomtype/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
       const data = req.body;
-      if (req.file) {
-        const image = await cloudinary.v2.uploader.upload(req.file.path);
-        data.image_url = image.secure_url;
-      }
-      const room = await prisma.room.update({
+      const roomtype = await prisma.roomType.update({
         where: { id: Number(id) },
         data: data,
       });
-      res.json(room);
+      res.json(roomtype);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// fetch all room
-router.get("/room", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const room = await prisma.room.findMany();
-    res.json(room);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// fetch single room
+// fetch all roomtype
 router.get(
-  "/room/:id",
+  "/roomtype",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const roomType = await prisma.roomType.findMany();
+      res.json(roomType);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// fetch single roomtype
+router.get(
+  "/roomtype/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const room = await prisma.room.findUnique({
+      const roomType = await prisma.roomType.findUnique({
         where: {
           id: Number(id),
         },
       });
-      res.json(room);
+      res.json(roomType);
     } catch (error) {
       next(error);
     }
@@ -95,11 +86,11 @@ router.get(
 
 // fetch guests by name
 router.get(
-  "/searchroom/:name",
+  "/searchroomtype/:name",
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
-      const rooms = await prisma.room.findMany({
+      const roomTypes = await prisma.roomType.findMany({
         where: {
           name: {
             contains: name,
@@ -108,11 +99,11 @@ router.get(
         },
       });
 
-      if (!rooms) {
+      if (!roomTypes) {
         return res.status(404).json({ error: "Guest not found" });
       }
 
-      res.json(rooms);
+      res.json(roomTypes);
     } catch (error: any) {
       if (
         error instanceof prisma.PrismaClientKnownRequestError &&
