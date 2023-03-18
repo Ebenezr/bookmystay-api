@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { AnyZodObject } from "zod";
-import { createUserSchema } from "../schemas/user.schema";
-
 
 // create client with URL
 
@@ -29,7 +27,6 @@ const validate =
 // create new user
 router.post(
   "/users",
-  validate(createUserSchema),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // check if there is already an user with the same email address
@@ -83,7 +80,7 @@ router.patch(
         where: { id: Number(id) },
         data: { ...req.body, password: hashedPassword },
       });
-      res.json(user);
+      res.status(202).json(user);
     } catch (error) {
       next(error);
     }
@@ -95,7 +92,11 @@ router.get(
   "/users",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await prisma.user.findMany();
+      const user = await prisma.user.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
       res.json(user);
     } catch (error) {
       next(error);
@@ -103,7 +104,7 @@ router.get(
   }
 );
 
-// fetch single users
+// fetch single user
 router.get(
   "/user/:id",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -115,8 +116,50 @@ router.get(
         },
       });
 
+      if (!user) {
+        return res.status(404).json({ error: "user not found" });
+      }
+
       res.json(user);
-    } catch (error) {
+    } catch (error: any) {
+      if (
+        error instanceof prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return res.status(404).json({ error: "user not found" });
+      }
+      next(error);
+    }
+  }
+);
+
+// fetch users by name
+router.get(
+  "/searchuser/:name",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name } = req.params;
+    try {
+      const users = await prisma.user.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      if (!users) {
+        return res.status(404).json({ error: "user not found" });
+      }
+
+      res.json(users);
+    } catch (error: any) {
+      if (
+        error instanceof prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return res.status(404).json({ error: "user not found" });
+      }
       next(error);
     }
   }

@@ -116,7 +116,7 @@ model Service {
   updatedAt   DateTime      @updatedAt
 }
 
-model Staff {
+model User {
   id           Int        @id @default(autoincrement())
   role         Role       @default(USER)
   name         String
@@ -135,7 +135,7 @@ model Staff {
 model Department {
   id        Int      @id @default(autoincrement())
   name      String
-  Staff     Staff[]
+  User      User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

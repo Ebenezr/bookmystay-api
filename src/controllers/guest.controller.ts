@@ -1,27 +1,8 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { AnyZodObject } from "zod";
 
-// create client with URL
-
-const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 const router = Router();
-
-const validate =
-  (schema: AnyZodObject) =>
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await schema.parseAsync({
-        body: req.body,
-        query: req.query,
-        params: req.params,
-      });
-      return next();
-    } catch (error) {
-      return res.status(400).json(error);
-    }
-  };
 
 // ROUTES
 // create new guest
@@ -39,10 +20,8 @@ router.post(
           .status(400)
           .json({ success: false, error: "Email already in use" });
       }
-      const password = req.body.password;
-      const hashedPassword = await bcrypt.hash(password, 10);
       const result = await prisma.guest.create({
-        data: { ...req.body, password: hashedPassword },
+        data: { ...req.body},
       });
 
       res.json(result);
@@ -74,11 +53,9 @@ router.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const password = req.body.password;
-      const hashedPassword = await bcrypt.hash(password, 10);
       const guest = await prisma.guest.update({
         where: { id: Number(id) },
-        data: { ...req.body, password: hashedPassword },
+        data: { ...req.body},
       });
       res.status(202).json(guest);
     } catch (error) {
