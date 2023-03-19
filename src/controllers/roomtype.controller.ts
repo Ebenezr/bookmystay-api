@@ -12,7 +12,7 @@ router.post(
     try {
       const data = req.body;
       const result = await prisma.roomType.create({ data });
-      res.json(result);
+      res.status(201).json(result);
     } catch (error) {
       next(error);
     }
@@ -28,7 +28,7 @@ router.delete(
       const roomType = await prisma.roomType.delete({
         where: { id: Number(id) },
       });
-      res.json(roomType);
+      res.status(204).json(roomType);
     } catch (error) {
       next(error);
     }
@@ -46,7 +46,7 @@ router.patch(
         where: { id: Number(id) },
         data: data,
       });
-      res.json(roomtype);
+      res.status(202).json(roomtype);
     } catch (error) {
       next(error);
     }
@@ -58,8 +58,25 @@ router.get(
   "/roomtype",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const roomType = await prisma.roomType.findMany();
-      res.json(roomType);
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const roomType = await prisma.roomType.findMany({
+        skip: startIndex,
+        take: limit,
+      });
+
+      const totalItems = await prisma.roomType.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: roomType.slice(0, endIndex),
+      });
     } catch (error) {
       next(error);
     }
@@ -77,7 +94,7 @@ router.get(
           id: Number(id),
         },
       });
-      res.json(roomType);
+      res.status(200).json(roomType);
     } catch (error) {
       next(error);
     }
@@ -90,6 +107,11 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
       const roomTypes = await prisma.roomType.findMany({
         where: {
           name: {
@@ -97,13 +119,23 @@ router.get(
             mode: "insensitive",
           },
         },
+        skip: startIndex,
+        take: limit,
       });
 
       if (!roomTypes) {
         return res.status(404).json({ error: "Guest not found" });
       }
 
-      res.json(roomTypes);
+      const totalItems = await prisma.roomType.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: roomTypes.slice(0, endIndex),
+      });
     } catch (error: any) {
       if (
         error instanceof prisma.PrismaClientKnownRequestError &&

@@ -21,10 +21,10 @@ router.post(
           .json({ success: false, error: "Email already in use" });
       }
       const result = await prisma.guest.create({
-        data: { ...req.body},
+        data: { ...req.body },
       });
 
-      res.json(result);
+      res.status(201).json(result);
     } catch (error) {
       next(error);
     }
@@ -40,7 +40,7 @@ router.delete(
       const guest = await prisma.guest.delete({
         where: { id: Number(id) },
       });
-      res.json(guest);
+      res.status(204).json(guest);
     } catch (error) {
       next(error);
     }
@@ -55,7 +55,7 @@ router.patch(
     try {
       const guest = await prisma.guest.update({
         where: { id: Number(id) },
-        data: { ...req.body},
+        data: { ...req.body },
       });
       res.status(202).json(guest);
     } catch (error) {
@@ -69,12 +69,28 @@ router.get(
   "/guests",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
       const guest = await prisma.guest.findMany({
         orderBy: {
           createdAt: "desc",
         },
+        skip: startIndex,
+        take: limit,
       });
-      res.json(guest);
+
+      const totalItems = await prisma.guest.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: guest.slice(0, endIndex),
+      });
     } catch (error) {
       next(error);
     }
@@ -97,7 +113,7 @@ router.get(
         return res.status(404).json({ error: "Guest not found" });
       }
 
-      res.json(guest);
+      res.status(200).json(guest);
     } catch (error: any) {
       if (
         error instanceof prisma.PrismaClientKnownRequestError &&
@@ -116,6 +132,11 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
       const guests = await prisma.guest.findMany({
         where: {
           name: {
@@ -123,13 +144,23 @@ router.get(
             mode: "insensitive",
           },
         },
+        skip: startIndex,
+        take: limit,
       });
 
       if (!guests) {
         return res.status(404).json({ error: "Guest not found" });
       }
 
-      res.json(guests);
+      const totalItems = await prisma.guest.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: guests.slice(0, endIndex),
+      });
     } catch (error: any) {
       if (
         error instanceof prisma.PrismaClientKnownRequestError &&

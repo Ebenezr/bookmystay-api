@@ -69,12 +69,28 @@ router.get(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
       const reservation = await prisma.reservation.findMany({
         orderBy: {
           createdAt: "desc",
         },
+        skip: startIndex,
+        take: limit,
       });
-      res.json(reservation);
+
+      const totalItems = await prisma.reservation.count();
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: reservation.slice(0, endIndex),
+      });
     } catch (error) {
       next(error);
     }
