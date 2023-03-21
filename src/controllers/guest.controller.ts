@@ -11,15 +11,6 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // check if there is already an guest with the same email address
-      const existingGuest = await prisma.guest.findUnique({
-        where: { email: req.body.email },
-      });
-      if (existingGuest) {
-        // return an error if the email is already in use
-        return res
-          .status(400)
-          .json({ success: false, error: "Email already in use" });
-      }
       const result = await prisma.guest.create({
         data: { ...req.body },
       });
@@ -115,12 +106,6 @@ router.get(
 
       res.status(200).json(guest);
     } catch (error: any) {
-      if (
-        error instanceof prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ error: "Guest not found" });
-      }
       next(error);
     }
   }
@@ -162,12 +147,6 @@ router.get(
         items: guests.slice(0, endIndex),
       });
     } catch (error: any) {
-      if (
-        error instanceof prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ error: "Guest not found" });
-      }
       next(error);
     }
   }

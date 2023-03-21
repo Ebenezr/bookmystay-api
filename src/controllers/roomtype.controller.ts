@@ -137,12 +137,6 @@ router.get(
         items: roomTypes.slice(0, endIndex),
       });
     } catch (error: any) {
-      if (
-        error instanceof prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ error: "Guest not found" });
-      }
       next(error);
     }
   }

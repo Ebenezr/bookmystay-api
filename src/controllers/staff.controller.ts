@@ -138,12 +138,6 @@ router.get(
 
       res.json(user);
     } catch (error: any) {
-      if (
-        error instanceof prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ error: "user not found" });
-      }
       next(error);
     }
   }
@@ -185,12 +179,6 @@ router.get(
         items: users.slice(0, endIndex),
       });
     } catch (error: any) {
-      if (
-        error instanceof prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return res.status(404).json({ error: "user not found" });
-      }
       next(error);
     }
   }
