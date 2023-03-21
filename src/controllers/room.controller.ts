@@ -14,10 +14,19 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      if (req.file) {
-        const image = await cloudinary.v2.uploader.upload(req.file.path);
-        data.image_url = image.secure_url;
-      }
+      // if (req.file) {
+      //   const image = await cloudinary.v2.uploader.upload(req.file.path);
+      //   data.image_url = image.secure_url;
+      // }
+      data.maxChild = parseInt(data.maxChild);
+      data.maxAdult = parseInt(data.maxAdult);
+      data.maxOccupancy = parseInt(data.maxOccupancy);
+      data.roomTypeId = parseInt(data.roomTypeId);
+
+      // Convert boolean strings to boolean values
+      data.vacant = JSON.parse(data.vacant);
+      data.availabilityStatus = JSON.parse(data.availabilityStatus);
+
       const result = await prisma.room.create({ data });
       res.status(201).json(result);
     } catch (error) {
@@ -66,31 +75,34 @@ router.patch(
 );
 
 // fetch all room
-router.get("/room", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const page = parseInt(req.query.page as string, 10) || 1;
-    const limit = parseInt(req.query.limit as string, 10) || 10;
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
+router.get(
+  "/rooms",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
 
-    const rooms = await prisma.room.findMany({
-      skip: startIndex,
-      take: limit,
-    });
+      const rooms = await prisma.room.findMany({
+        skip: startIndex,
+        take: limit,
+      });
 
-    const totalItems = await prisma.room.count();
+      const totalItems = await prisma.room.count();
 
-    res.status(200).json({
-      currentPage: page,
-      totalPages: Math.ceil(totalItems / limit),
-      itemsPerPage: limit,
-      totalItems: totalItems,
-      items: rooms.slice(0, endIndex),
-    });
-  } catch (error) {
-    next(error);
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: rooms.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // fetch single room
 router.get(
