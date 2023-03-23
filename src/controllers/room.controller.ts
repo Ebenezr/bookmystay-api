@@ -1,4 +1,3 @@
-import cloudinary from "cloudinary";
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import multerMiddleware from "../middleware/multer.middleware";
@@ -59,10 +58,6 @@ router.patch(
     const { id } = req.params;
     try {
       const data = req.body;
-      if (req.file) {
-        const image = await cloudinary.v2.uploader.upload(req.file.path);
-        data.image_url = image.secure_url;
-      }
       const room = await prisma.room.update({
         where: { id: Number(id) },
         data: data,

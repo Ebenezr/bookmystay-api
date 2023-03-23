@@ -55,7 +55,7 @@ router.patch(
 
 // fetch all roomtype
 router.get(
-  "/roomtype",
+  "/roomtypes",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;

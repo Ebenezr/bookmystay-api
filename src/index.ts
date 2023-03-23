@@ -8,6 +8,8 @@ const morgan = require("morgan");
 const express = require("express");
 const app = express();
 
+const rateLimit = require("express-rate-limit");
+
 app.use(express.json());
 
 // load environment variables
@@ -20,6 +22,14 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use(morgan("dev"));
+
+const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+});
+
+app.use(limiter);
+
 // setup cors
 app.use(cors());
 app.use(router);
