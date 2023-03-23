@@ -8,7 +8,7 @@
     "prisma": "prisma",
     "build": "tsc",
     "prestart": "npx prisma migrate dev --name init",
-    "start": "yarn install && yarn build && node dist/index.js"
+    "start": "yarn build && node dist/index.js"
   },
   "author": "Ebenezr",
   "license": "MIT",
