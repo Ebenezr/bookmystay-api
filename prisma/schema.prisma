@@ -37,7 +37,7 @@ model Room {
   vacant             Boolean       @default(true)
   RoomType           RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
   roomTypeId         Int
-  rate               Decimal
+  rate               Decimal       @default(0)
   Bed                Bed[]
   Reservation        Reservation[]
 
