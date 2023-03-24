@@ -53,7 +53,7 @@ router.patch(
   }
 );
 
-// fetch all department
+// fetch all department paginated
 router.get(
   "/departments",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -77,6 +77,19 @@ router.get(
         totalItems: totalItems,
         items: department.slice(0, endIndex),
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// fetch all departments no pagination
+router.get(
+  "/departments/all",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const department = await prisma.department.findMany({});
+      res.status(200).json({ department });
     } catch (error) {
       next(error);
     }

@@ -120,6 +120,19 @@ router.get(
   }
 );
 
+// fetch all room types no pagination
+router.get(
+  "/users/all",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const user = await prisma.user.findMany({});
+      res.status(200).json({ user });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // fetch single user
 router.get(
   "/user/:id",

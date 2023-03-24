@@ -88,6 +88,19 @@ router.get(
   }
 );
 
+// fetch all room types no pagination
+router.get(
+  "/guests/all",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const guest = await prisma.guest.findMany({});
+      res.status(200).json({ guest });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // fetch single guest
 router.get(
   "/guest/:id",

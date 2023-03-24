@@ -117,6 +117,19 @@ router.get(
   }
 );
 
+// fetch all room types no pagination
+router.get(
+  "/rooms/all",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const room = await prisma.room.findMany({});
+      res.status(200).json({ room });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // fetch rooms by name
 router.get(
   "/searchroom/:name",
