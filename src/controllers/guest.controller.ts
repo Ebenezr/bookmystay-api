@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { UpdateGuestPayload } from "../types";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -41,7 +42,11 @@ router.delete(
 // update guests
 router.patch(
   "/guest/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: Request<{ id: string }, {}, UpdateGuestPayload>,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { id } = req.params;
     try {
       const guest = await prisma.guest.update({
