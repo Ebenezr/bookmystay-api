@@ -7,7 +7,7 @@
     "dev": "nodemon --config nodemon.json src/index.ts",
     "prisma": "prisma",
     "build": "tsc",
-    "prestart": "npx prisma migrate dev --name init",
+    "prestart": "npx prisma migrate deploy",
     "start": "yarn build && node dist/index.js"
   },
   "author": "Ebenezr",
