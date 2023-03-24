@@ -83,7 +83,7 @@ router.get(
   }
 );
 
-// fetch all departments no pagination
+// ! fetch all departments no pagination
 router.get(
   "/departments/all",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -105,6 +105,9 @@ router.get(
       const department = await prisma.department.findUnique({
         where: {
           id: Number(id),
+        },
+          include: {
+        User: true,
         },
       });
       res.status(200).json(department);

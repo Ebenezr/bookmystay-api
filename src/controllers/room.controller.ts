@@ -69,7 +69,7 @@ router.patch(
   }
 );
 
-// fetch all room
+// ! fetch all room
 router.get(
   "/rooms",
   async (req: Request, res: Response, next: NextFunction) => {

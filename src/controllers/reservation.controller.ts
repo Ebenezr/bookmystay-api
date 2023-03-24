@@ -97,6 +97,10 @@ router.get(
         where: {
           id: Number(id),
         },
+          include: {
+            Service: true,
+            Payment:true,
+        },
       });
 
       if (!reservation) {
