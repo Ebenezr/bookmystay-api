@@ -37,10 +37,12 @@ model Room {
   vacant             Boolean       @default(true)
   RoomType           RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
   roomTypeId         Int
+  rate               Decimal
   Bed                Bed[]
   Reservation        Reservation[]
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index(fields: [name], type: Hash)
   @@index([roomTypeId])
@@ -81,8 +83,6 @@ model Reservation {
   roomId       Int
   Guest        Guest            @relation(fields: [guestId], references: [id], onDelete: Cascade)
   guestId      Int
-  Service      Service?         @relation(fields: [serviceId], references: [id])
-  serviceId    Int?
   roomTotal    Decimal?         @default(0)
   serviceTotal Decimal?         @default(0)
   netTotal     Decimal?         @default(0)
@@ -94,26 +94,31 @@ model Reservation {
   balance      Decimal?         @default(0)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+  Service      Service[]
+  Payment      Payment[]
 
   @@index([guestId])
   @@index([roomId])
 }
 
 model Payment {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   accountNumber String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Service {
-  id          Int           @id @default(autoincrement())
-  type        ServiceType
-  rate        Decimal
-  code        String?
-  Reservation Reservation[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id            Int         @id @default(autoincrement())
+  type          String
+  rate          Decimal
+  code          String?
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model User {
@@ -157,12 +162,6 @@ enum Role {
 enum Gender {
   MALE
   FEMALE
-}
-
-enum ServiceType {
-  LAUNDRY
-  BREAKFAST
-  DINNER
 }
 
 enum ResavationStatus {
