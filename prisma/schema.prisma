@@ -78,6 +78,7 @@ model Reservation {
   checkOut     DateTime
   adultNumber  Int?
   childNumber  Int?
+  taxname      String?
   note         String?          @db.Text
   Room         Room             @relation(fields: [roomId], references: [id])
   roomId       Int
