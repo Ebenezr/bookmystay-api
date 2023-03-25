@@ -130,45 +130,45 @@ router.get(
   }
 );
 
-// fetch rooms by name
-router.get(
-  "/searchroom/:name",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { name } = req.params;
-    try {
-      const page = parseInt(req.query.page as string, 10) || 1;
-      const limit = parseInt(req.query.limit as string, 10) || 10;
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
+// // fetch rooms by name
+// router.get(
+//   "/searchroom/:name",
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { name } = req.params;
+//     try {
+//       const page = parseInt(req.query.page as string, 10) || 1;
+//       const limit = parseInt(req.query.limit as string, 10) || 10;
+//       const startIndex = (page - 1) * limit;
+//       const endIndex = startIndex + limit;
 
-      const rooms = await prisma.room.findMany({
-        where: {
-          name: {
-            contains: code,
-            mode: "insensitive",
-          },
-        },
-        skip: startIndex,
-        take: limit,
-      });
+//       const rooms = await prisma.room.findMany({
+//         where: {
+//           name: {
+//             contains: code,
+//             mode: "insensitive",
+//           },
+//         },
+//         skip: startIndex,
+//         take: limit,
+//       });
 
-      if (!rooms) {
-        return res.status(404).json({ error: "Room not found" });
-      }
+//       if (!rooms) {
+//         return res.status(404).json({ error: "Room not found" });
+//       }
 
-      const totalItems = await prisma.room.count();
+//       const totalItems = await prisma.room.count();
 
-      res.status(200).json({
-        currentPage: page,
-        totalPages: Math.ceil(totalItems / limit),
-        itemsPerPage: limit,
-        totalItems: totalItems,
-        items: rooms.slice(0, endIndex),
-      });
-    } catch (error: any) {
-      next(error);
-    }
-  }
-);
+//       res.status(200).json({
+//         currentPage: page,
+//         totalPages: Math.ceil(totalItems / limit),
+//         itemsPerPage: limit,
+//         totalItems: totalItems,
+//         items: rooms.slice(0, endIndex),
+//       });
+//     } catch (error: any) {
+//       next(error);
+//     }
+//   }
+// );
 
 export default router;
