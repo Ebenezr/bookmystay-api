@@ -69,7 +69,7 @@ router.patch(
   }
 );
 
-// ! fetch all room
+//  fetch all room
 router.get(
   "/rooms",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -144,7 +144,7 @@ router.get(
       const rooms = await prisma.room.findMany({
         where: {
           name: {
-            contains: name,
+            contains: code,
             mode: "insensitive",
           },
         },
