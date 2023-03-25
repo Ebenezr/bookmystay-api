@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "bookmystay nodejs express api",
   "main": "index.js",
-  "scripts": {
-    "dev": "nodemon --config nodemon.json src/index.ts",
-    "prisma": "prisma",
-    "build": "tsc",
-    "prestart": "npx prisma migrate deploy",
-    "start": "yarn build && node dist/index.js"
-  },
+"scripts": {
+  "dev": "nodemon --config nodemon.json src/index.ts",
+  "prisma": "prisma",
+  "generate": "prisma generate",
+  "build": "tsc",
+  "prestart": "npx prisma migrate deploy && yarn generate",
+  "start": "yarn build && node dist/index.js"
+},
+
   "author": "Ebenezr",
   "license": "MIT",
   "dependencies": {
