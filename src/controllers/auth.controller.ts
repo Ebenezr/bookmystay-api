@@ -105,7 +105,11 @@ router.post(
         where: { passwordResetToken: token },
       });
 
-      if (!user || user.passwordResetExpires < new Date()) {
+      if (
+        !user ||
+        user.passwordResetExpires === null ||
+        user.passwordResetExpires < new Date()
+      ) {
         return res
           .status(400)
           .json({ success: false, error: "Invalid or expired token" });
