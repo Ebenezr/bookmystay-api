@@ -27,7 +27,7 @@ model Guest {
 
 model Room {
   id                 Int           @id @default(autoincrement())
-  name               String
+  floor              String?
   code               String
   description        String        @db.Text
   maxChild           Int?          @default(0)
@@ -44,7 +44,7 @@ model Room {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index(fields: [name], type: Hash)
+  @@index(fields: [code], type: Hash)
   @@index([roomTypeId])
 }
 
@@ -61,7 +61,6 @@ model Bed {
   name      String
   status    Boolean  @default(true)
   size      String
-  type      BedType  @default(SINGLE_BED)
   Room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
   createdAt DateTime @default(now())
@@ -72,7 +71,8 @@ model Reservation {
   id           Int              @id @default(autoincrement())
   code         String
   status       ResavationStatus
-  user         String?
+  User         User             @relation(fields: [staffId], references: [id])
+  staffId      Int
   bookTime     DateTime         @default(now())
   checkIn      DateTime
   checkOut     DateTime
@@ -87,7 +87,6 @@ model Reservation {
   serviceTotal Decimal?         @default(0)
   netTotal     Decimal?         @default(0)
   discount     Decimal?         @default(0)
-  tax          Decimal?         @default(0)
   taxTotal     Decimal?         @default(0)
   subTotal     Decimal?         @default(0)
   paid         Decimal?         @default(0)
@@ -96,13 +95,35 @@ model Reservation {
   updatedAt    DateTime         @updatedAt
   Service      Service[]
   Payment      Payment[]
+  Tax          Tax[]
 
   @@index([guestId])
   @@index([roomId])
 }
 
+model Tax {
+  id            Int          @id @default(autoincrement())
+  name          String
+  ratio         Decimal
+  Reservation   Reservation? @relation(fields: [reservationId], references: [id])
+  reservationId Int?
+}
+
+model PaymentMode {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Payment Payment[]
+}
+
+model Curency {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
 model Payment {
   id            Int         @id @default(autoincrement())
+  PaymentMode   PaymentMode @relation(fields: [paymentModeId], references: [id])
+  paymentModeId Int
   accountNumber String
   Reservation   Reservation @relation(fields: [reservationId], references: [id])
   reservationId Int
@@ -122,17 +143,18 @@ model Service {
 }
 
 model User {
-  id           Int        @id @default(autoincrement())
-  role         Role       @default(USER)
+  id           Int           @id @default(autoincrement())
+  role         Role          @default(USER)
   name         String
-  email        String     @unique
+  email        String        @unique
   password     String?
   phone        String
-  Department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  Department   Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId Int
-  activeStatus Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  activeStatus Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Reservation  Reservation[]
 
   @@index([departmentId])
 }
@@ -145,27 +167,36 @@ model Department {
   updatedAt DateTime @updatedAt
 }
 
-enum BedType {
-  TWIN_BED
-  DOUBLE_BED
-  QUEEN_BED
-  KING_BED
-  SINGLE_BED
-  DOUBLEXL_BED
+model Company {
+  id         Int     @id @default(autoincrement())
+  name       String
+  email      String
+  phone      String
+  address    String
+  regNo      String?
+  logourl    String?
+  entityType String?
+  website    String?
 }
 
 enum Role {
   ADMIN
   USER
+  MANAGER
+  OTHER
 }
 
 enum Gender {
   MALE
   FEMALE
+  OTHER
 }
 
 enum ResavationStatus {
   NEW
   CONFIRMED
   CHECKIN
+  CANCELED
+  UNCONFIRMED
+  CHECKOUT
 }
