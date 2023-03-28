@@ -60,7 +60,6 @@ model Bed {
   id        Int      @id @default(autoincrement())
   name      String
   status    Boolean  @default(true)
-  size      String
   bedType   String
   Room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
