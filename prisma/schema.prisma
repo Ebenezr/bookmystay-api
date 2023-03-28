@@ -61,6 +61,7 @@ model Bed {
   name      String
   status    Boolean  @default(true)
   size      String
+  bedType   String
   Room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
   createdAt DateTime @default(now())
