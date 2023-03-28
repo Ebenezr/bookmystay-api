@@ -66,6 +66,9 @@ router.get(
       const roomType = await prisma.roomType.findMany({
         skip: startIndex,
         take: limit,
+        include: {
+          Room: true,
+        },
       });
 
       const totalItems = await prisma.roomType.count();
@@ -88,7 +91,11 @@ router.get(
   "/roomtypes/all",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const roomtype = await prisma.roomType.findMany({});
+      const roomtype = await prisma.roomType.findMany({
+        include: {
+          Room: true,
+        },
+      });
       res.status(200).json({ roomtype });
     } catch (error) {
       next(error);
@@ -105,6 +112,9 @@ router.get(
       const roomType = await prisma.roomType.findUnique({
         where: {
           id: Number(id),
+        },
+        include: {
+          Room: true,
         },
       });
       res.status(200).json(roomType);
@@ -131,6 +141,9 @@ router.get(
             contains: name,
             mode: "insensitive",
           },
+        },
+        include: {
+          Room: true,
         },
         skip: startIndex,
         take: limit,

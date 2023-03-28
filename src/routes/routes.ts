@@ -11,6 +11,8 @@ import curencyRouter from "../controllers/curency.controller";
 import paymentmodeRouter from "../controllers/paymentmode.controller";
 import companyRouter from "../controllers/company.controller";
 import authRouter from "../controllers/auth.controller";
+import bedRouter from "../controllers/bed.controller";
+import serviceRouter from "../controllers/service.controller";
 
 const router = Router();
 
@@ -25,5 +27,7 @@ router.use("/api/v1", curencyRouter);
 router.use("/api/v1", paymentmodeRouter);
 router.use("/api/v1", companyRouter);
 router.use("/api/v1", authRouter);
+router.use("/api/v1", serviceRouter);
+router.use("/api/v1", bedRouter);
 
 export default router;

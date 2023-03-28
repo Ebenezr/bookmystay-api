@@ -5,22 +5,13 @@ const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
-// create new room
+// create new service
 router.post(
-  "/rooms",
+  "/services",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      data.maxChild = parseInt(data.maxChild);
-      data.maxAdult = parseInt(data.maxAdult);
-      data.maxOccupancy = parseInt(data.maxOccupancy);
-      data.roomTypeId = parseInt(data.roomTypeId);
-
-      // Convert boolean strings to boolean values
-      data.vacant = JSON.parse(data.vacant);
-      data.availabilityStatus = JSON.parse(data.availabilityStatus);
-
-      const result = await prisma.room.create({ data });
+      const result = await prisma.service.create({ data });
       res.status(201).json(result);
     } catch (error) {
       next(error);
@@ -28,43 +19,43 @@ router.post(
   }
 );
 
-// delete a room
+// delete a service
 router.delete(
-  `/room/:id`,
+  `/service/:id`,
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const room = await prisma.room.delete({
+      const service = await prisma.service.delete({
         where: { id: Number(id) },
       });
-      res.status(204).json(room);
+      res.status(204).json(service);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// update room
+// update service
 router.patch(
-  "/room/:id",
+  "/service/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
       const data = req.body;
-      const room = await prisma.room.update({
+      const service = await prisma.service.update({
         where: { id: Number(id) },
         data: data,
       });
-      res.status(202).json(room);
+      res.status(202).json(service);
     } catch (error) {
       next(error);
     }
   }
 );
 
-//  fetch all room
+//  fetch all service
 router.get(
-  "/rooms",
+  "/services",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -72,22 +63,19 @@ router.get(
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
 
-      const rooms = await prisma.room.findMany({
+      const services = await prisma.service.findMany({
         skip: startIndex,
         take: limit,
-        include: {
-          Bed: true,
-        },
       });
 
-      const totalItems = await prisma.room.count();
+      const totalItems = await prisma.service.count();
 
       res.status(200).json({
         currentPage: page,
         totalPages: Math.ceil(totalItems / limit),
         itemsPerPage: limit,
         totalItems: totalItems,
-        items: rooms.slice(0, endIndex),
+        items: services.slice(0, endIndex),
       });
     } catch (error) {
       next(error);
@@ -95,44 +83,31 @@ router.get(
   }
 );
 
-// fetch single room
+// fetch single service
 router.get(
-  "/room/:id",
+  "/service/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const room = await prisma.room.findUnique({
+      const service = await prisma.service.findUnique({
         where: {
           id: Number(id),
         },
-        include: {
-          Bed: true,
-        },
       });
-      res.status(200).json(room);
+      res.status(200).json(service);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// fetch all room types no pagination
+// fetch all service types no pagination
 router.get(
-  "/rooms/all",
+  "/services/all",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { vacant, availabilityStatus } = req.query;
-
     try {
-      const room = await prisma.room.findMany({
-        where: {
-          vacant: vacant === "true" ? true : false,
-          availabilityStatus: availabilityStatus === "true" ? true : false,
-        },
-        include: {
-          Bed: true,
-        },
-      });
-      res.status(200).json({ room });
+      const service = await prisma.service.findMany();
+      res.status(200).json({ service });
     } catch (error) {
       next(error);
     }

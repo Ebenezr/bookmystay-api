@@ -68,46 +68,44 @@ model Bed {
 }
 
 model Reservation {
-  id           Int              @id @default(autoincrement())
+  id           Int               @id @default(autoincrement())
   code         String
-  status       ResavationStatus
-  User         User             @relation(fields: [staffId], references: [id])
+  status       ResavationStatus?
+  User         User              @relation(fields: [staffId], references: [id])
   staffId      Int
-  bookTime     DateTime         @default(now())
+  bookTime     DateTime          @default(now())
   checkIn      DateTime
   checkOut     DateTime
   adultNumber  Int?
   childNumber  Int?
-  taxname      String?
-  note         String?          @db.Text
-  Room         Room             @relation(fields: [roomId], references: [id])
+  taxName      String?
+  note         String?           @db.Text
+  Room         Room              @relation(fields: [roomId], references: [id])
   roomId       Int
-  Guest        Guest            @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  Guest        Guest             @relation(fields: [guestId], references: [id], onDelete: Cascade)
   guestId      Int
-  roomTotal    Decimal?         @default(0)
-  serviceTotal Decimal?         @default(0)
-  netTotal     Decimal?         @default(0)
-  discount     Decimal?         @default(0)
-  taxTotal     Decimal?         @default(0)
-  subTotal     Decimal?         @default(0)
-  paid         Decimal?         @default(0)
-  balance      Decimal?         @default(0)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  roomTotal    Decimal?          @default(0)
+  serviceTotal Decimal?          @default(0)
+  netTotal     Decimal?          @default(0)
+  discount     Decimal?          @default(0)
+  taxTotal     Decimal?          @default(0)
+  subTotal     Decimal?          @default(0)
+  paid         Decimal?          @default(0)
+  balance      Decimal?          @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  paidStatus   paidStatusEnum    @default(UNPAID)
   Service      Service[]
   Payment      Payment[]
-  Tax          Tax[]
 
   @@index([guestId])
   @@index([roomId])
 }
 
 model Tax {
-  id            Int          @id @default(autoincrement())
-  name          String
-  ratio         Decimal
-  Reservation   Reservation? @relation(fields: [reservationId], references: [id])
-  reservationId Int?
+  id    Int     @id @default(autoincrement())
+  name  String
+  ratio Decimal
 }
 
 model PaymentMode {
@@ -117,8 +115,9 @@ model PaymentMode {
 }
 
 model Curency {
-  id   Int    @id @default(autoincrement())
-  name String
+  id     Int     @id @default(autoincrement())
+  name   String
+  symbol String?
 }
 
 model Payment {
@@ -193,6 +192,12 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+}
+
+enum paidStatusEnum {
+  PAID
+  UNPAID
+  PENDING
 }
 
 enum ResavationStatus {
