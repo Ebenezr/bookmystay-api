@@ -121,14 +121,15 @@ model Curency {
 }
 
 model Payment {
-  id            Int         @id @default(autoincrement())
-  PaymentMode   PaymentMode @relation(fields: [paymentModeId], references: [id])
-  paymentModeId Int
-  accountNumber String
-  Reservation   Reservation @relation(fields: [reservationId], references: [id])
-  reservationId Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              Int         @id @default(autoincrement())
+  PaymentMode     PaymentMode @relation(fields: [paymentModeId], references: [id])
+  paymentModeId   Int
+  accountNumber   String
+  referenceNumber String
+  Reservation     Reservation @relation(fields: [reservationId], references: [id])
+  reservationId   Int
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 }
 
 model Service {
@@ -182,7 +183,7 @@ model Company {
   phone      String
   address    String
   regNo      String?
-  logourl    String?
+  logoUrl    String?
   entityType String?
   website    String?
 }
