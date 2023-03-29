@@ -23,11 +23,18 @@ router.post(
         },
       });
 
-      // Update the room's vacant field to false
-      await prisma.room.update({
-        where: { id: req.body.roomId },
-        data: { vacant: false },
-      });
+      // Update the room's vacant field based on the reservation status
+      if (reservationData.status === "CHECKIN") {
+        await prisma.room.update({
+          where: { id: req.body.roomId },
+          data: { vacant: false },
+        });
+      } else if (reservationData.status === "CHECKOUT") {
+        await prisma.room.update({
+          where: { id: req.body.roomId },
+          data: { vacant: true },
+        });
+      }
 
       res.json(result);
     } catch (error) {
@@ -81,6 +88,19 @@ router.patch(
           },
         },
       });
+
+      // Update the room's vacant field based on the reservation status
+      if (reservationData.status === "CHECKIN") {
+        await prisma.room.update({
+          where: { id: req.body.roomId },
+          data: { vacant: false },
+        });
+      } else if (reservationData.status === "CHECKOUT") {
+        await prisma.room.update({
+          where: { id: req.body.roomId },
+          data: { vacant: true },
+        });
+      }
       res.status(202).json(reservation);
     } catch (error) {
       next(error);
