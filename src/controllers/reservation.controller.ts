@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Payment, PrismaClient, Service } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -10,8 +10,23 @@ router.post(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { services, payments, ...reservationData } = req.body;
       const result = await prisma.reservation.create({
-        data: { ...req.body },
+        data: {
+          ...reservationData,
+          Service: {
+            create: services,
+          },
+          Payment: {
+            create: payments,
+          },
+        },
+      });
+
+      // Update the room's vacant field to false
+      await prisma.room.update({
+        where: { id: req.body.roomId },
+        data: { vacant: false },
       });
 
       res.json(result);
@@ -41,11 +56,28 @@ router.delete(
 router.patch(
   "/reservation/:id",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
+    // const { id } = req.params;
     try {
+      const { services, payments, ...reservationData } = req.body;
       const reservation = await prisma.reservation.update({
-        where: { id: Number(id) },
-        data: { ...req.body },
+        where: { id: Number(req.params.id) },
+        data: {
+          ...reservationData,
+          Service: {
+            upsert: services.map((service: Service) => ({
+              where: { id: service.id },
+              update: service,
+              create: service,
+            })),
+          },
+          Payment: {
+            upsert: payments.map((payment: Payment) => ({
+              where: { id: payment.id },
+              update: payment,
+              create: payment,
+            })),
+          },
+        },
       });
       res.status(202).json(reservation);
     } catch (error) {
@@ -97,9 +129,9 @@ router.get(
         where: {
           id: Number(id),
         },
-          include: {
-            Service: true,
-            Payment:true,
+        include: {
+          Service: true,
+          Payment: true,
         },
       });
 
