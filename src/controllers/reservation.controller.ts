@@ -10,15 +10,15 @@ router.post(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { services, payments, ...reservationData } = req.body;
+      const { Service, Payment, ...reservationData } = req.body;
       const result = await prisma.reservation.create({
         data: {
           ...reservationData,
           Service: {
-            create: services,
+            create: Service,
           },
           Payment: {
-            create: payments,
+            create: Payment,
           },
         },
       });
@@ -58,24 +58,26 @@ router.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     // const { id } = req.params;
     try {
-      const { services, payments, ...reservationData } = req.body;
+      const { Service = [], Payment = [], ...reservationData } = req.body;
       const reservation = await prisma.reservation.update({
         where: { id: Number(req.params.id) },
         data: {
           ...reservationData,
           Service: {
-            upsert: services.map((service: Service) => ({
-              where: { id: service.id },
-              update: service,
-              create: service,
-            })),
+            upsert:
+              Service?.map((service: Service) => ({
+                where: { id: service.id },
+                update: service,
+                create: service,
+              })) || [],
           },
           Payment: {
-            upsert: payments.map((payment: Payment) => ({
-              where: { id: payment.id },
-              update: payment,
-              create: payment,
-            })),
+            upsert:
+              Payment?.map((payment: Payment) => ({
+                where: { id: payment.id },
+                update: payment,
+                create: payment,
+              })) || [],
           },
         },
       });
