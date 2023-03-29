@@ -139,4 +139,23 @@ router.get(
   }
 );
 
+// fetch all room types no pagination
+router.get(
+  "/rooms/nofilter",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { vacant, availabilityStatus } = req.query;
+
+    try {
+      const room = await prisma.room.findMany({
+        include: {
+          Bed: true,
+        },
+      });
+      res.status(200).json({ room });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;
