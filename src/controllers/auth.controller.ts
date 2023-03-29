@@ -44,6 +44,8 @@ router.post(
         success: true,
         token,
         name: user.name,
+        role: user.role,
+        email: user.email,
       });
     } catch (error) {
       next(error);
