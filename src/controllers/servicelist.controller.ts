@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
-// create new serviceType
+// create new servicelist
 router.post(
-  "/serviceyypes",
+  "/servicelists",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const result = await prisma.serviceType.create({ data });
+      const result = await prisma.serviceList.create({ data });
       res.status(201).json(result);
     } catch (error) {
       next(error);
@@ -19,43 +19,43 @@ router.post(
   }
 );
 
-// delete a serviceType
+// delete a servicelist
 router.delete(
-  `/servicetype/:id`,
+  `/servicelist/:id`,
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const serviceType = await prisma.serviceType.delete({
+      const servicelist = await prisma.serviceList.delete({
         where: { id: Number(id) },
       });
-      res.status(204).json(serviceType);
+      res.status(204).json(servicelist);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// update serviceType
+// update servicelist
 router.patch(
-  "/servicetype/:id",
+  "/servicelist/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
       const data = req.body;
-      const serviceType = await prisma.serviceType.update({
+      const servicelist = await prisma.serviceList.update({
         where: { id: Number(id) },
         data: data,
       });
-      res.status(202).json(serviceType);
+      res.status(202).json(servicelist);
     } catch (error) {
       next(error);
     }
   }
 );
 
-//  fetch all serviceType
+//  fetch all servicelist
 router.get(
-  "/servicetypes",
+  "/servicelists",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -63,22 +63,19 @@ router.get(
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
 
-      const serviceTypes = await prisma.serviceType.findMany({
+      const servicelists = await prisma.serviceList.findMany({
         skip: startIndex,
         take: limit,
-        include: {
-          ServiceList: true,
-        },
       });
 
-      const totalItems = await prisma.serviceType.count();
+      const totalItems = await prisma.serviceList.count();
 
       res.status(200).json({
         currentPage: page,
         totalPages: Math.ceil(totalItems / limit),
         itemsPerPage: limit,
         totalItems: totalItems,
-        items: serviceTypes.slice(0, endIndex),
+        items: servicelists.slice(0, endIndex),
       });
     } catch (error) {
       next(error);
@@ -86,38 +83,31 @@ router.get(
   }
 );
 
-// fetch single serviceType
+// fetch single servicelist
 router.get(
-  "/servicetype/:id",
+  "/servicelist/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const serviceType = await prisma.serviceType.findUnique({
+      const servicelist = await prisma.serviceList.findUnique({
         where: {
           id: Number(id),
         },
-        include: {
-          ServiceList: true,
-        },
       });
-      res.status(200).json(serviceType);
+      res.status(200).json(servicelist);
     } catch (error) {
       next(error);
     }
   }
 );
 
-// fetch all serviceType types no pagination
+// fetch all servicelist types no pagination
 router.get(
-  "/servicetypes/all",
+  "/servicelists/all",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const serviceType = await prisma.serviceType.findMany({
-        include: {
-          ServiceList: true,
-        },
-      });
-      res.status(200).json({ serviceType });
+      const servicelist = await prisma.serviceList.findMany();
+      res.status(200).json({ servicelist });
     } catch (error) {
       next(error);
     }

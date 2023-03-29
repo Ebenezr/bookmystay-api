@@ -135,18 +135,26 @@ model Payment {
 model Service {
   id            Int         @id @default(autoincrement())
   type          String
-  rate          Decimal
-  amount        Int
+  amount        Decimal
+  quantity      Int         @default(0)
   Reservation   Reservation @relation(fields: [reservationId], references: [id])
   reservationId Int
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
 
+model ServiceList {
+  id            Int         @id @default(autoincrement())
+  name          String
+  rate          Decimal
+  ServiceType   ServiceType @relation(fields: [serviceTypeId], references: [id])
+  serviceTypeId Int
+}
+
 model ServiceType {
-  id   Int     @id @default(autoincrement())
-  type String
-  rate Decimal
+  id          Int           @id @default(autoincrement())
+  type        String
+  ServiceList ServiceList[]
 }
 
 model User {
