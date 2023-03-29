@@ -27,7 +27,8 @@ model Guest {
 
 model Room {
   id                 Int           @id @default(autoincrement())
-  floor              String?
+  Floor              Floor         @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  floorId            Int
   code               String
   description        String        @db.Text
   maxChild           Int?          @default(0)
@@ -174,6 +175,12 @@ model User {
   passwordResetExpires DateTime?
 
   @@index([departmentId])
+}
+
+model Floor {
+  id   Int    @id @default(autoincrement())
+  name String
+  Room Room[]
 }
 
 model Department {

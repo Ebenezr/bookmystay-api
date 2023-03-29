@@ -7,12 +7,16 @@ import roomRouter from "../controllers/room.controller";
 import roomtypeRouter from "../controllers/roomtype.controller";
 import departmentRouter from "../controllers/department.controller";
 import taxRouter from "../controllers/tax.controller";
-import curencyRouter from "../controllers/curency.controller";
+import currencyRouter from "../controllers/currency.controller";
 import paymentmodeRouter from "../controllers/paymentmode.controller";
 import companyRouter from "../controllers/company.controller";
 import authRouter from "../controllers/auth.controller";
 import bedRouter from "../controllers/bed.controller";
 import serviceRouter from "../controllers/service.controller";
+import serviceTypeRouter from "../controllers/servicetype.controller";
+import serviceListRouter from "../controllers/servicelist.controller";
+import floorRouter from "../controllers/floor.controller";
+import paymentRouter from "../controllers/payment.controller";
 
 const router = Router();
 
@@ -23,11 +27,15 @@ router.use("/api/v1", roomRouter);
 router.use("/api/v1", roomtypeRouter);
 router.use("/api/v1", departmentRouter);
 router.use("/api/v1", taxRouter);
-router.use("/api/v1", curencyRouter);
+router.use("/api/v1", currencyRouter);
 router.use("/api/v1", paymentmodeRouter);
 router.use("/api/v1", companyRouter);
 router.use("/api/v1", authRouter);
 router.use("/api/v1", serviceRouter);
 router.use("/api/v1", bedRouter);
+router.use("/api/v1", serviceTypeRouter);
+router.use("/api/v1", serviceListRouter);
+router.use("/api/v1", floorRouter);
+router.use("/api/v1", paymentRouter);
 
 export default router;
