@@ -45,7 +45,7 @@ router.post(
           email: user.email,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "12h" }
       );
 
       // Set the session cookie
