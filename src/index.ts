@@ -4,7 +4,7 @@ import router from "./routes/routes";
 const dotenv = require("dotenv");
 const cors = require("cors");
 const morgan = require("morgan");
-
+const cookieParser = require("cookie-parser");
 const express = require("express");
 const app = express();
 
@@ -32,6 +32,7 @@ app.use(limiter);
 
 // setup cors
 app.use(cors());
+app.use(cookieParser());
 app.use(router);
 
 app.listen(PORT, () =>
