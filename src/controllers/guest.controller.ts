@@ -43,7 +43,7 @@ router.delete(
 router.patch(
   "/guest/:id",
   async (
-    req: Request<{ id: string }, {}, UpdateGuestPayload>,
+    req: Request<{ id: number }, {}, UpdateGuestPayload>,
     res: Response,
     next: NextFunction
   ) => {

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import { AnyZodObject } from "zod";
+import { UpdateStaffPayload } from "../types";
 
 // create client with URL
 
@@ -71,14 +72,16 @@ router.delete(
 // update users
 router.patch(
   "/user/:id",
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: Request<{ id: number }, {}, UpdateStaffPayload>,
+    res: Response,
+    next: NextFunction
+  ) => {
     const { id } = req.params;
     try {
-      const password = req.body.password;
-      const hashedPassword = await bcrypt.hash(password, 10);
       const user = await prisma.user.update({
         where: { id: Number(id) },
-        data: { ...req.body, password: hashedPassword },
+        data: { ...req.body },
       });
       res.status(202).json(user);
     } catch (error) {
