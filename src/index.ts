@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import router from "./routes/routes";
-
+import cookieParser from "cookie-parser";
 const dotenv = require("dotenv");
 const cors = require("cors");
 const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
+
 const express = require("express");
 const app = express();
 

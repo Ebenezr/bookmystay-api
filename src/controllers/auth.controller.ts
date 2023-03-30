@@ -52,7 +52,7 @@ router.post(
       const sessionCookie = serialize("session", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "none",
         maxAge: 12 * 60 * 60, // 12 hours in seconds
         path: "/",
       });
