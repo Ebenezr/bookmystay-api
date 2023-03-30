@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
+import { serialize } from "cookie";
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = new PrismaClient();
@@ -23,6 +24,13 @@ router.post(
           .json({ success: false, error: "Invalid email or password" });
       }
 
+      // Check if user is active
+      if (!user.activeStatus) {
+        return res
+          .status(400)
+          .json({ success: false, error: "User account is inactive" });
+      }
+
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         return res
@@ -39,6 +47,18 @@ router.post(
         process.env.JWT_SECRET,
         { expiresIn: "7d" }
       );
+
+      // Set the session cookie
+      const sessionCookie = serialize("session", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 12 * 60 * 60, // 12 hours in seconds
+        path: "/",
+      });
+
+      // Add the session cookie to the response header
+      res.setHeader("Set-Cookie", sessionCookie);
 
       res.json({
         success: true,
