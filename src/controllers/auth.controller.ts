@@ -53,9 +53,9 @@ router.post(
   }
 );
 
-// Add a new route to handle password reset requests
+// Add a new route to handle email verification and token generation
 router.post(
-  "/reset-password",
+  "/verify-email",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = req.body;
@@ -69,7 +69,7 @@ router.post(
 
       // Generate a password reset token
       const resetToken = crypto.randomBytes(32).toString("hex");
-      const passwordResetExpires = new Date(Date.now() + 3600000); // Token valid for 1 hour
+      const passwordResetExpires = new Date(Date.now() + 600000); // Token valid for 10 minutes
 
       // Update the user with the reset token and expiration
       await prisma.user.update({
@@ -80,13 +80,10 @@ router.post(
         },
       });
 
-      // Send the reset token via email (replace with your email sending logic)
-      // ...
-
       res.json({
         success: true,
-        message:
-          "Password reset token sent. Check your email for further instructions.",
+        message: "Email verified successfully. Token generated.",
+        token: resetToken,
       });
     } catch (error) {
       next(error);
@@ -96,11 +93,10 @@ router.post(
 
 // Add a new route to handle the actual password reset
 router.post(
-  "/reset-password/:token",
+  "/reset-password",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { token } = req.params;
-      const { newPassword } = req.body;
+      const { token, newPassword } = req.body;
 
       // Find the user with the provided token and check if it's still valid
       const user = await prisma.user.findUnique({
