@@ -7,7 +7,6 @@ const jwt = require("jsonwebtoken");
 const prisma = new PrismaClient();
 const router = Router();
 
-
 router.post(
   "/login",
 
@@ -67,6 +66,7 @@ router.post(
         name: user.name,
         role: user.role,
         email: user.email,
+        userId: user.id,
       });
     } catch (error) {
       next(error);
