@@ -122,9 +122,9 @@ model Curency {
 
 model Payment {
   id            Int         @id @default(autoincrement())
-  PaymentMode   String
-  accountNumber String
-  referenceId   String
+  PaymentMode   String?
+  accountNumber String?
+  referenceId   String?
   Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   reservationId Int
   amount        Decimal
