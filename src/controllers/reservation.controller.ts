@@ -124,6 +124,10 @@ router.get(
         },
         skip: startIndex,
         take: limit,
+        include: {
+          Service: true,
+          Payment: true,
+        },
       });
 
       const totalItems = await prisma.reservation.count();

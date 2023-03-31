@@ -11,7 +11,7 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const result = await prisma.paymentMode.create({ data });
+      const result = await prisma.payment.create({ data });
       res.status(201).json(result);
     } catch (error) {
       next(error);
@@ -25,7 +25,7 @@ router.delete(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const payment = await prisma.paymentMode.delete({
+      const payment = await prisma.payment.delete({
         where: { id: Number(id) },
       });
       res.status(204).json(payment);
@@ -42,7 +42,7 @@ router.patch(
     const { id } = req.params;
     try {
       const data = req.body;
-      const payment = await prisma.paymentMode.update({
+      const payment = await prisma.payment.update({
         where: { id: Number(id) },
         data: data,
       });
@@ -58,7 +58,7 @@ router.get(
   "/payments",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const payments = await prisma.paymentMode.findMany();
+      const payments = await prisma.payment.findMany();
 
       res.status(200).json(payments);
     } catch (error) {
@@ -73,7 +73,7 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const payment = await prisma.paymentMode.findUnique({
+      const payment = await prisma.payment.findUnique({
         where: {
           id: Number(id),
         },
@@ -91,14 +91,7 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
-      const payments = await prisma.paymentMode.findMany({
-        where: {
-          name: {
-            contains: name,
-            mode: "insensitive",
-          },
-        },
-      });
+      const payments = await prisma.payment.findMany();
 
       if (!payments) {
         return res.status(404).json({ error: "Room not found" });

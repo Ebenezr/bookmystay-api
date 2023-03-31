@@ -8,7 +8,7 @@
     "prisma": "prisma",
     "generate": "prisma generate",
     "build": "tsc",
-    "prestartskip": "npx prisma migrate deploy && yarn generate",
+    "prestart": "npx prisma migrate deploy && yarn generate",
     "start": "yarn build && node dist/index.js"
   },
   "author": "Ebenezr",
