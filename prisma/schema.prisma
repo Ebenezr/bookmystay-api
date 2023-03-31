@@ -125,8 +125,9 @@ model Payment {
   PaymentMode   String
   accountNumber String
   referenceId   String
-  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   reservationId Int
+  amount        Decimal
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }
@@ -136,7 +137,7 @@ model Service {
   type          String
   amount        Decimal
   quantity      Int         @default(0)
-  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   reservationId Int
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
