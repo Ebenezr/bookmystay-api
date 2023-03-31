@@ -110,9 +110,8 @@ model Tax {
 }
 
 model PaymentMode {
-  id      Int       @id @default(autoincrement())
-  name    String
-  Payment Payment[]
+  id   Int    @id @default(autoincrement())
+  name String
 }
 
 model Curency {
@@ -122,15 +121,14 @@ model Curency {
 }
 
 model Payment {
-  id              Int         @id @default(autoincrement())
-  PaymentMode     PaymentMode @relation(fields: [paymentModeId], references: [id])
-  paymentModeId   Int
-  accountNumber   String
-  referenceNumber String
-  Reservation     Reservation @relation(fields: [reservationId], references: [id])
-  reservationId   Int
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id            Int         @id @default(autoincrement())
+  PaymentMode   String
+  accountNumber String
+  referenceId   String
+  Reservation   Reservation @relation(fields: [reservationId], references: [id])
+  reservationId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Service {
