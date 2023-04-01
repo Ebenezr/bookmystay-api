@@ -58,9 +58,24 @@ router.get(
   "/payments",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const payments = await prisma.payment.findMany();
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const payments = await prisma.payment.findMany({
+        skip: startIndex,
+        take: limit,
+      });
 
-      res.status(200).json(payments);
+      const totalItems = await prisma.payment.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: payments.slice(0, endIndex),
+      });
     } catch (error) {
       next(error);
     }
