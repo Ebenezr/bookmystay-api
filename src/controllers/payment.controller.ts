@@ -101,17 +101,41 @@ router.get(
 );
 
 // fetch payments by name
+// fetch guests by name
 router.get(
-  "/searchpayment/:name",
+  "/searchpayment/:referenceId",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name } = req.params;
+    const { referenceId } = req.params;
     try {
-      const payments = await prisma.payment.findMany();
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
 
-      if (!payments) {
-        return res.status(404).json({ error: "Room not found" });
+      const rooms = await prisma.payment.findMany({
+        where: {
+          referenceId: {
+            contains: referenceId,
+            mode: "insensitive",
+          },
+        },
+        skip: startIndex,
+        take: limit,
+      });
+
+      if (!rooms) {
+        return res.status(404).json({ error: "Payment not found" });
       }
-      res.status(200).json(payments);
+
+      const totalItems = await prisma.payment.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: rooms.slice(0, endIndex),
+      });
     } catch (error: any) {
       next(error);
     }

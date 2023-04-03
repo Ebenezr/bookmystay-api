@@ -111,4 +111,45 @@ router.get(
   }
 );
 
+// fetch guests by name
+router.get(
+  "/searchbed/:name",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { name, bedType } = req.params;
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const beds = await prisma.bed.findMany({
+        where: {
+          name: {
+            contains: name,
+            mode: "insensitive",
+          },
+        },
+        skip: startIndex,
+        take: limit,
+      });
+
+      if (!beds) {
+        return res.status(404).json({ error: "Bed not found" });
+      }
+
+      const totalItems = await prisma.bed.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: beds.slice(0, endIndex),
+      });
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
 export default router;

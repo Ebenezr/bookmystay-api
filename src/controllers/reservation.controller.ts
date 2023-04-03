@@ -172,4 +172,59 @@ router.get(
   }
 );
 
+// fetch reservations by guest name
+router.get(
+  "/searchreservation/:guestname",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { guestname } = req.params;
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const reservations = await prisma.reservation.findMany({
+        where: {
+          Guest: {
+            name: {
+              contains: guestname,
+              mode: "insensitive",
+            },
+          },
+        },
+        skip: startIndex,
+        take: limit,
+        include: {
+          Guest: true,
+        },
+      });
+
+      if (!reservations) {
+        return res.status(404).json({ error: "Reservation not found" });
+      }
+
+      const totalItems = await prisma.reservation.count({
+        where: {
+          Guest: {
+            name: {
+              contains: guestname,
+              mode: "insensitive",
+            },
+          },
+        },
+      });
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: reservations.slice(0, endIndex),
+      });
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
 export default router;
