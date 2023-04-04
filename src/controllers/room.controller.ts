@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay, addDays } from "date-fns";
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -139,14 +139,91 @@ router.get(
   }
 );
 
+// router.get(
+//   "/rooms/stats",
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const currentDate = new Date();
 
+//       const checkInsToday = await prisma.reservation.count({
+//         where: {
+//           checkIn: {
+//             gte: startOfDay(currentDate),
+//             lte: endOfDay(currentDate),
+//           },
+//         },
+//       });
+
+//       const checkOutsToday = await prisma.reservation.count({
+//         where: {
+//           checkOut: {
+//             gte: startOfDay(currentDate),
+//             lte: endOfDay(currentDate),
+//           },
+//         },
+//       });
+
+//       const todaysReservations = await prisma.reservation.findMany({
+//         where: {
+//           checkIn: {
+//             lte: endOfDay(currentDate),
+//           },
+//           checkOut: {
+//             gte: startOfDay(currentDate),
+//           },
+//         },
+//         select: {
+//           roomId: true,
+//         },
+//       });
+
+//       const todaysRoomIds = todaysReservations.map(
+//         (reservation) => reservation.roomId
+//       );
+
+//       const occupiedRoomsToday = todaysRoomIds.length;
+//       const totalRooms = await prisma.room.count();
+//       const vacantRoomsToday = totalRooms - occupiedRoomsToday;
+
+//       res.status(200).json({
+//         checkInsToday,
+//         checkOutsToday,
+//         totalRooms,
+//         vacantRoomsToday,
+//         occupiedRoomsToday,
+//       });
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
+// fetch all room types no pagination
+router.get(
+  "/rooms/nofilter",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { vacant, availabilityStatus } = req.query;
+
+    try {
+      const room = await prisma.room.findMany({
+        include: {
+          Bed: true,
+        },
+      });
+      res.status(200).json({ room });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 router.get(
   "/rooms/stats",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currentDate = new Date();
+      const yesterdayDate = addDays(currentDate, -1);
 
+      // Today's stats
       const checkInsToday = await prisma.reservation.count({
         where: {
           checkIn: {
@@ -187,36 +264,95 @@ router.get(
       const totalRooms = await prisma.room.count();
       const vacantRoomsToday = totalRooms - occupiedRoomsToday;
 
+      // Yesterday's stats
+      const checkInsYesterday = await prisma.reservation.count({
+        where: {
+          checkIn: {
+            gte: startOfDay(yesterdayDate),
+            lte: endOfDay(yesterdayDate),
+          },
+        },
+      });
+
+      const checkOutsYesterday = await prisma.reservation.count({
+        where: {
+          checkOut: {
+            gte: startOfDay(yesterdayDate),
+            lte: endOfDay(yesterdayDate),
+          },
+        },
+      });
+
+      const yesterdayReservations = await prisma.reservation.findMany({
+        where: {
+          checkIn: {
+            lte: endOfDay(yesterdayDate),
+          },
+          checkOut: {
+            gte: startOfDay(yesterdayDate),
+          },
+        },
+        select: {
+          roomId: true,
+        },
+      });
+
+      const yesterdayRoomIds = yesterdayReservations.map(
+        (reservation) => reservation.roomId
+      );
+
+      const occupiedRoomsYesterday = yesterdayRoomIds.length;
+      const vacantRoomsYesterday = totalRooms - occupiedRoomsYesterday;
+
+      // Calculate percentage change
+      const checkInsPercentChange = calculatePercentChange(
+        checkInsYesterday,
+        checkInsToday
+      );
+      const checkOutsPercentChange = calculatePercentChange(
+        checkOutsYesterday,
+        checkOutsToday
+      );
+      const occupiedRoomsPercentChange = calculatePercentChange(
+        occupiedRoomsYesterday,
+        occupiedRoomsToday
+      );
+      const vacantRoomsPercentChange = calculatePercentChange(
+        vacantRoomsYesterday,
+        vacantRoomsToday
+      );
+
       res.status(200).json({
         checkInsToday,
         checkOutsToday,
         totalRooms,
         vacantRoomsToday,
         occupiedRoomsToday,
+        checkInsYesterday,
+        checkOutsYesterday,
+        vacantRoomsYesterday,
+        occupiedRoomsYesterday,
+        checkInsPercentChange,
+        checkOutsPercentChange,
+        vacantRoomsPercentChange,
+        occupiedRoomsPercentChange,
       });
     } catch (error) {
       next(error);
     }
   }
 );
-// fetch all room types no pagination
-router.get(
-  "/rooms/nofilter",
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { vacant, availabilityStatus } = req.query;
 
-    try {
-      const room = await prisma.room.findMany({
-        include: {
-          Bed: true,
-        },
-      });
-      res.status(200).json({ room });
-    } catch (error) {
-      next(error);
-    }
+function calculatePercentChange(oldValue: number, newValue: number): number {
+  if (oldValue === 0 && newValue === 0) {
+    return 0;
   }
-);
+
+  const change = newValue - oldValue;
+  const percentChange = (change / oldValue) * 100;
+
+  return percentChange;
+}
 
 // fetch guests by name
 router.get(
