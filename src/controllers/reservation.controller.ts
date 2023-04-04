@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { Payment, PrismaClient, Service } from "@prisma/client";
-
+import { Prisma, Reservation } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -220,6 +220,51 @@ router.get(
         itemsPerPage: limit,
         totalItems: totalItems,
         items: reservations.slice(0, endIndex),
+      });
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
+// fetch all reservations and revenue
+router.get(
+  "/reservations/revenue",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const lastThirtyDays = new Date();
+      lastThirtyDays.setDate(lastThirtyDays.getDate() - 30);
+
+      const yesterdayRevenue = await prisma.reservation.aggregate({
+        where: {
+          checkOut: {
+            gte: yesterday,
+            lt: new Date(),
+          },
+        },
+        _sum: {
+          paid: true,
+        },
+      });
+
+      const lastThirtyDaysRevenue = await prisma.reservation.aggregate({
+        where: {
+          checkIn: {
+            gte: lastThirtyDays,
+            lt: new Date(),
+          },
+        },
+        _sum: {
+          paid: true,
+        },
+      });
+
+      res.json({
+        yesterdayRevenue: yesterdayRevenue._sum?.paid ?? 0,
+        lastThirtyDaysRevenue: lastThirtyDaysRevenue._sum?.paid ?? 0,
       });
     } catch (error: any) {
       next(error);
