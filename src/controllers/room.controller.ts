@@ -10,7 +10,7 @@ router.post(
   "/rooms",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { amenities, ...data } = req.body;
+      const { RoomAmenity, ...data } = req.body;
       data.maxChild = parseInt(data.maxChild);
       data.maxAdult = parseInt(data.maxAdult);
       data.maxOccupancy = parseInt(data.maxOccupancy);
@@ -23,9 +23,9 @@ router.post(
       const result = await prisma.room.create({ data });
 
       // Create or connect the amenities
-      if (Array.isArray(amenities)) {
+      if (Array.isArray(RoomAmenity)) {
         const roomAmenities = await Promise.all(
-          amenities.map(async (amenity) => {
+          RoomAmenity?.map(async (amenity) => {
             // Find or create the amenity
             const existingAmenity = await prisma.amenity.upsert({
               where: { name: amenity },
@@ -75,7 +75,7 @@ router.patch(
   "/rooms/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { amenities, ...data } = req.body;
+      const { RoomAmenity, ...data } = req.body;
       const roomId = parseInt(req.params.id);
 
       data.maxChild = parseInt(data.maxChild);
@@ -97,9 +97,9 @@ router.patch(
       await prisma.roomAmenity.deleteMany({ where: { roomId } });
 
       // Create or connect the amenities and associate them with the room
-      if (Array.isArray(amenities)) {
+      if (Array.isArray(RoomAmenity)) {
         const roomAmenities = await Promise.all(
-          amenities.map(async (amenity) => {
+          RoomAmenity?.map(async (amenity) => {
             // Find or create the amenity
             const existingAmenity = await prisma.amenity.upsert({
               where: { name: amenity },
