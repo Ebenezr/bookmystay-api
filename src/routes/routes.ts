@@ -17,6 +17,7 @@ import serviceTypeRouter from "../controllers/servicetype.controller";
 import serviceListRouter from "../controllers/servicelist.controller";
 import floorRouter from "../controllers/floor.controller";
 import paymentRouter from "../controllers/payment.controller";
+import amenityRouter from "../controllers/amenity.controller";
 
 const router = Router();
 
@@ -37,5 +38,6 @@ router.use("/api/v1", serviceTypeRouter);
 router.use("/api/v1", serviceListRouter);
 router.use("/api/v1", floorRouter);
 router.use("/api/v1", paymentRouter);
+router.use("/api/v1", amenityRouter);
 
 export default router;
