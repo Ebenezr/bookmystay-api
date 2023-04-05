@@ -22,22 +22,15 @@ router.post(
 
       const result = await prisma.room.create({ data });
 
-      // Create or connect the amenities
+      // Create RoomAmenity records
       if (Array.isArray(RoomAmenity)) {
         const roomAmenities = await Promise.all(
-          RoomAmenity?.map(async (amenity) => {
-            // Find or create the amenity
-            const existingAmenity = await prisma.amenity.upsert({
-              where: { name: amenity },
-              update: {},
-              create: { name: amenity },
-            });
-
+          RoomAmenity?.map(async (roomAmenity) => {
             // Create RoomAmenity
             return prisma.roomAmenity.create({
               data: {
                 roomId: result.id,
-                amenityId: existingAmenity.id,
+                amenityId: roomAmenity.amenityId,
               },
             });
           })
@@ -70,48 +63,44 @@ router.delete(
   }
 );
 
-// Update a room
+// update existing room
 router.patch(
-  "/rooms/:id",
+  "/room/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { RoomAmenity, ...data } = req.body;
       const roomId = parseInt(req.params.id);
+      const { RoomAmenity, ...data } = req.body;
 
-      data.maxChild = parseInt(data.maxChild);
-      data.maxAdult = parseInt(data.maxAdult);
-      data.maxOccupancy = parseInt(data.maxOccupancy);
-      data.roomTypeId = parseInt(data.roomTypeId);
+      if (data.maxChild) data.maxChild = parseInt(data.maxChild);
+      if (data.maxAdult) data.maxAdult = parseInt(data.maxAdult);
+      if (data.maxOccupancy) data.maxOccupancy = parseInt(data.maxOccupancy);
+      if (data.roomTypeId) data.roomTypeId = parseInt(data.roomTypeId);
 
-      // Convert boolean strings to boolean values
-      data.vacant = JSON.parse(data.vacant);
-      data.availabilityStatus = JSON.parse(data.availabilityStatus);
+      if (data.vacant !== undefined) data.vacant = JSON.parse(data.vacant);
+      if (data.availabilityStatus !== undefined)
+        data.availabilityStatus = JSON.parse(data.availabilityStatus);
 
-      // Update the room
-      const updatedRoom = await prisma.room.update({
+      const result = await prisma.room.update({
         where: { id: roomId },
-        data,
+        data: data,
       });
 
-      // Delete old RoomAmenity records
-      await prisma.roomAmenity.deleteMany({ where: { roomId } });
-
-      // Create or connect the amenities and associate them with the room
+      // Update RoomAmenity records
       if (Array.isArray(RoomAmenity)) {
-        const roomAmenities = await Promise.all(
-          RoomAmenity?.map(async (amenity) => {
-            // Find or create the amenity
-            const existingAmenity = await prisma.amenity.upsert({
-              where: { name: amenity },
-              update: {},
-              create: { name: amenity },
-            });
+        // Delete existing RoomAmenity records for the room
+        await prisma.roomAmenity.deleteMany({ where: { roomId } });
 
-            // Create RoomAmenity
+        // Create new RoomAmenity records
+        const roomAmenities = await Promise.all(
+          RoomAmenity?.map(async (roomAmenity) => {
             return prisma.roomAmenity.create({
               data: {
-                roomId,
-                amenityId: existingAmenity.id,
+                room: {
+                  connect: { id: roomId },
+                },
+                amenity: {
+                  connect: { id: roomAmenity.amenityId },
+                },
               },
             });
           })
@@ -121,7 +110,7 @@ router.patch(
         await Promise.all(roomAmenities);
       }
 
-      res.status(200).json(updatedRoom);
+      res.status(200).json(result);
     } catch (error) {
       next(error);
     }
