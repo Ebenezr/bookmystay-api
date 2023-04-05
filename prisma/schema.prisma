@@ -41,12 +41,32 @@ model Room {
   rate               Decimal       @default(0)
   Bed                Bed[]
   Reservation        Reservation[]
+  RoomAmenity        RoomAmenity[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index(fields: [code], type: Hash)
   @@index([roomTypeId])
+}
+
+model Amenity {
+  id          Int           @id @default(autoincrement())
+  name        String
+  RoomAmenity RoomAmenity[]
+
+  @@unique([name])
+}
+
+model RoomAmenity {
+  id        Int     @id @default(autoincrement())
+  roomId    Int
+  amenityId Int
+  room      Room    @relation(fields: [roomId], references: [id])
+  amenity   Amenity @relation(fields: [amenityId], references: [id])
+
+  @@index([roomId])
+  @@index([amenityId])
 }
 
 model RoomType {

@@ -10,7 +10,7 @@ router.post(
   "/rooms",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = req.body;
+      const { amenities, ...data } = req.body;
       data.maxChild = parseInt(data.maxChild);
       data.maxAdult = parseInt(data.maxAdult);
       data.maxOccupancy = parseInt(data.maxOccupancy);
@@ -21,6 +21,32 @@ router.post(
       data.availabilityStatus = JSON.parse(data.availabilityStatus);
 
       const result = await prisma.room.create({ data });
+
+      // Create or connect the amenities
+      if (Array.isArray(amenities)) {
+        const roomAmenities = await Promise.all(
+          amenities.map(async (amenity) => {
+            // Find or create the amenity
+            const existingAmenity = await prisma.amenity.upsert({
+              where: { name: amenity },
+              update: {},
+              create: { name: amenity },
+            });
+
+            // Create RoomAmenity
+            return prisma.roomAmenity.create({
+              data: {
+                roomId: result.id,
+                amenityId: existingAmenity.id,
+              },
+            });
+          })
+        );
+
+        // Wait for all RoomAmenity records to be created
+        await Promise.all(roomAmenities);
+      }
+
       res.status(201).json(result);
     } catch (error) {
       next(error);
@@ -44,18 +70,58 @@ router.delete(
   }
 );
 
-// update room
+// Update a room
 router.patch(
-  "/room/:id",
+  "/rooms/:id",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
     try {
-      const data = req.body;
-      const room = await prisma.room.update({
-        where: { id: Number(id) },
-        data: data,
+      const { amenities, ...data } = req.body;
+      const roomId = parseInt(req.params.id);
+
+      data.maxChild = parseInt(data.maxChild);
+      data.maxAdult = parseInt(data.maxAdult);
+      data.maxOccupancy = parseInt(data.maxOccupancy);
+      data.roomTypeId = parseInt(data.roomTypeId);
+
+      // Convert boolean strings to boolean values
+      data.vacant = JSON.parse(data.vacant);
+      data.availabilityStatus = JSON.parse(data.availabilityStatus);
+
+      // Update the room
+      const updatedRoom = await prisma.room.update({
+        where: { id: roomId },
+        data,
       });
-      res.status(202).json(room);
+
+      // Delete old RoomAmenity records
+      await prisma.roomAmenity.deleteMany({ where: { roomId } });
+
+      // Create or connect the amenities and associate them with the room
+      if (Array.isArray(amenities)) {
+        const roomAmenities = await Promise.all(
+          amenities.map(async (amenity) => {
+            // Find or create the amenity
+            const existingAmenity = await prisma.amenity.upsert({
+              where: { name: amenity },
+              update: {},
+              create: { name: amenity },
+            });
+
+            // Create RoomAmenity
+            return prisma.roomAmenity.create({
+              data: {
+                roomId,
+                amenityId: existingAmenity.id,
+              },
+            });
+          })
+        );
+
+        // Wait for all RoomAmenity records to be created
+        await Promise.all(roomAmenities);
+      }
+
+      res.status(200).json(updatedRoom);
     } catch (error) {
       next(error);
     }
@@ -77,6 +143,11 @@ router.get(
         take: limit,
         include: {
           Bed: true,
+          RoomAmenity: {
+            select: {
+              amenity: true,
+            },
+          },
         },
       });
 
@@ -107,6 +178,11 @@ router.get(
         },
         include: {
           Bed: true,
+          RoomAmenity: {
+            select: {
+              amenity: true,
+            },
+          },
         },
       });
       res.status(200).json(room);
@@ -130,6 +206,11 @@ router.get(
         },
         include: {
           Bed: true,
+          RoomAmenity: {
+            select: {
+              amenity: true,
+            },
+          },
         },
       });
       res.status(200).json({ room });
@@ -207,6 +288,11 @@ router.get(
       const room = await prisma.room.findMany({
         include: {
           Bed: true,
+          RoomAmenity: {
+            select: {
+              amenity: true,
+            },
+          },
         },
       });
       res.status(200).json({ room });
