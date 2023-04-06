@@ -10,10 +10,10 @@ router.post(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { Service, Payment, ...reservationData } = req.body;
+      const { Service, Payment, ...data } = req.body;
       const result = await prisma.reservation.create({
         data: {
-          ...reservationData,
+          ...data,
           Service: {
             create: Service,
           },
@@ -24,12 +24,12 @@ router.post(
       });
 
       // Update the room's vacant field based on the reservation status
-      if (reservationData.status === "CHECKIN") {
+      if (data.status === "CHECKIN") {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: false },
         });
-      } else if (reservationData.status === "CHECKOUT") {
+      } else if (data.status === "CHECKOUT") {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: true },
@@ -65,11 +65,26 @@ router.patch(
   async (req: Request, res: Response, next: NextFunction) => {
     // const { id } = req.params;
     try {
-      const { Service = [], Payment = [], ...reservationData } = req.body;
+      const { Service = [], Payment = [], ...data } = req.body;
+
+      if (data.adultNumber) data.adultNumber = parseInt(data.adultNumber);
+      if (data.childNumber) data.childNumber = parseInt(data.childNumber);
+      if (data.roomId) data.roomId = parseInt(data.roomId);
+      if (data.guestId) data.guestId = parseInt(data.guestId);
+      if (data.staffId) data.staffId = parseInt(data.staffId);
+      if (data.roomTotal) data.roomTotal = parseFloat(data.roomTotal);
+      if (data.serviceTotal) data.serviceTotal = parseFloat(data.serviceTotal);
+      if (data.netTotal) data.netTotal = parseFloat(data.netTotal);
+      if (data.taxTotal) data.taxTotal = parseFloat(data.taxTotal);
+      if (data.subTotal) data.subTotal = parseFloat(data.subTotal);
+      if (data.paid) data.paid = parseFloat(data.paid);
+      if (data.balance) data.balance = parseFloat(data.balance);
+      if (data.discount) data.discount = parseFloat(data.discount);
+
       const reservation = await prisma.reservation.update({
         where: { id: Number(req.params.id) },
         data: {
-          ...reservationData,
+          ...data,
           Service: {
             upsert:
               Service?.map((service: Service) => ({
@@ -90,12 +105,12 @@ router.patch(
       });
 
       // Update the room's vacant field based on the reservation status
-      if (reservationData.status === "CHECKIN") {
+      if (data.status === "CHECKIN") {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: false },
         });
-      } else if (reservationData.status === "CHECKOUT") {
+      } else if (data.status === "CHECKOUT") {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: true },
