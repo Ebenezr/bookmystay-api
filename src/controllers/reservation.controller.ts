@@ -3,7 +3,7 @@ import { Payment, PrismaClient, Service } from "@prisma/client";
 import { Prisma, Reservation } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
-
+import { Decimal } from "decimal.js";
 // ROUTES
 // create new reservation
 router.post(
@@ -287,4 +287,131 @@ router.get(
   }
 );
 
+router.get(
+  "/reservations/revenue/monthly",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const currentYear = new Date().getFullYear();
+      const monthlyRevenue: Record<string, number> = {};
+
+      for (let month = 0; month < 12; month++) {
+        const startDate = new Date(currentYear, month, 1);
+        const endDate = new Date(currentYear, month + 1, 1);
+
+        const monthlyRevenueResult = await prisma.reservation.aggregate({
+          where: {
+            checkOut: {
+              gte: startDate,
+              lt: endDate,
+            },
+          },
+          _sum: {
+            paid: true,
+          },
+        });
+
+        const monthName = startDate.toLocaleString("default", {
+          month: "long",
+        });
+        const paidAmount = monthlyRevenueResult._sum?.paid;
+        monthlyRevenue[monthName] = paidAmount
+          ? new Decimal(paidAmount).toNumber()
+          : 0;
+      }
+
+      res.json(monthlyRevenue);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/reservations/revenue/weekly",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const currentWeekStart = getStartOfWeek(new Date());
+      const dailyRevenue: Record<string, number> = {};
+
+      for (let day = 0; day < 7; day++) {
+        const startDate = new Date(currentWeekStart.valueOf());
+        startDate.setDate(startDate.getDate() + day);
+        const endDate = new Date(startDate.valueOf());
+        endDate.setDate(endDate.getDate() + 1);
+
+        const dailyRevenueResult = await prisma.reservation.aggregate({
+          where: {
+            checkOut: {
+              gte: startDate,
+              lt: endDate,
+            },
+          },
+          _sum: {
+            paid: true,
+          },
+        });
+
+        const dayName = startDate.toLocaleString("default", {
+          weekday: "long",
+        });
+        const paidAmount = dailyRevenueResult._sum?.paid;
+        dailyRevenue[dayName] = paidAmount
+          ? new Decimal(paidAmount).toNumber()
+          : 0;
+      }
+
+      res.json(dailyRevenue);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
+
+router.get(
+  "/reservations/staff-sales",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      const staffSalesResult = await prisma.reservation.groupBy({
+        by: ["staffId"],
+        where: {
+          checkOut: {
+            gte: todayStart,
+            lt: todayEnd,
+          },
+        },
+        _sum: {
+          paid: true,
+        },
+      });
+
+      const staffSales: Record<number, number> = {};
+
+      staffSalesResult.forEach((staffSale) => {
+        const paidAmount = staffSale._sum.paid;
+        staffSales[staffSale.staffId] = paidAmount
+          ? new Decimal(paidAmount).toNumber()
+          : 0;
+      });
+
+      res.json(staffSales);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
 export default router;
+
+function getStartOfWeek(date: Date): Date {
+  const startOfWeek = new Date(date);
+  const day = startOfWeek.getDay();
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
+  startOfWeek.setDate(diff);
+  return startOfWeek;
+}
