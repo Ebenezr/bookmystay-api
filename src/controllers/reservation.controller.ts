@@ -82,7 +82,7 @@ router.patch(
       if (data.discount) data.discount = parseFloat(data.discount);
 
       const reservation = await prisma.reservation.update({
-        where: { id: Number(req.params.id) },
+        where: { id: parseInt(req.params.id) },
         data: {
           ...data,
           Service: {

@@ -142,4 +142,54 @@ router.get(
   }
 );
 
+// Add the new endpoint
+router.get(
+  "/reservations/revenue/payment-modes",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const lastThirtyDays = new Date();
+      lastThirtyDays.setDate(lastThirtyDays.getDate() - 30);
+
+      const paymentModes = [
+        "BANK",
+        "MPESA",
+        "CHEQUE",
+        "CREDIT",
+        "CASH",
+        "CARD",
+      ];
+
+      const revenueByPaymentMode = await Promise.all(
+        paymentModes.map(async (mode) => {
+          const revenue = await prisma.payment.aggregate({
+            where: {
+              PaymentMode: mode,
+              createdAt: {
+                gte: lastThirtyDays,
+                lt: new Date(),
+              },
+            },
+            _sum: {
+              amount: true,
+            },
+          });
+
+          return {
+            [mode]: revenue._sum?.amount ?? 0,
+          };
+        })
+      );
+
+      // Merge the individual mode objects into a single object
+      const revenueObject = Object.assign({}, ...revenueByPaymentMode);
+
+      res.json({
+        lastThirtyDaysRevenueByPaymentMode: revenueObject,
+      });
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
 export default router;
