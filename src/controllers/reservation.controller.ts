@@ -81,28 +81,56 @@ router.patch(
       if (data.balance) data.balance = parseFloat(data.balance);
       if (data.discount) data.discount = parseFloat(data.discount);
 
+      const reservationData = {
+        ...data,
+      };
+
+      if (Service.length > 0) {
+        reservationData.Service = {
+          upsert: Service.map((service: Service) => ({
+            where: { id: service.id },
+            update: service,
+            create: service,
+          })),
+        };
+      }
+
+      if (Payment.length > 0) {
+        reservationData.Payment = {
+          upsert: Payment.map((payment: Payment) => ({
+            where: { id: payment.id },
+            update: payment,
+            create: payment,
+          })),
+        };
+      }
+
       const reservation = await prisma.reservation.update({
         where: { id: parseInt(req.params.id) },
-        data: {
-          ...data,
-          Service: {
-            upsert:
-              Service?.map((service: Service) => ({
-                where: { id: service.id },
-                update: service,
-                create: service,
-              })) || [],
-          },
-          Payment: {
-            upsert:
-              Payment?.map((payment: Payment) => ({
-                where: { id: payment.id },
-                update: payment,
-                create: payment,
-              })) || [],
-          },
-        },
+        data: reservationData,
       });
+      // const reservation = await prisma.reservation.update({
+      //   where: { id: parseInt(req.params.id) },
+      //   data: {
+      //     ...data,
+      //     Service: {
+      //       upsert:
+      //         Service?.map((service: Service) => ({
+      //           where: { id: service.id },
+      //           update: service,
+      //           create: service,
+      //         })) || [],
+      //     },
+      //     Payment: {
+      //       upsert:
+      //         Payment?.map((payment: Payment) => ({
+      //           where: { id: payment.id },
+      //           update: payment,
+      //           create: payment,
+      //         })) || [],
+      //     },
+      //   },
+      // });
 
       // Update the room's vacant field based on the reservation status
       if (data.status === "CHECKIN") {
