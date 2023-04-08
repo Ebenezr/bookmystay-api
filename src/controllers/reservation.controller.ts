@@ -367,7 +367,6 @@ router.get(
   }
 );
 
-
 router.get(
   "/reservations/staff-sales",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -400,6 +399,44 @@ router.get(
       });
 
       res.json(staffSales);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+);
+
+router.get(
+  "/reservations/revenueByDateRange",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const fromDate = req.query.fromDate
+        ? new Date(req.query.fromDate as string)
+        : undefined;
+      const toDate = req.query.toDate
+        ? new Date(req.query.toDate as string)
+        : undefined;
+
+      if (!fromDate || !toDate) {
+        return res.status(400).json({
+          error: "Both fromDate and toDate query parameters are required.",
+        });
+      }
+
+      const dateRangeRevenue = await prisma.reservation.aggregate({
+        where: {
+          checkOut: {
+            gte: fromDate,
+            lt: toDate,
+          },
+        },
+        _sum: {
+          paid: true,
+        },
+      });
+
+      res.json({
+        dateRangeRevenue: dateRangeRevenue._sum?.paid ?? 0,
+      });
     } catch (error: any) {
       next(error);
     }
