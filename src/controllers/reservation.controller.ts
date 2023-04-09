@@ -4,8 +4,10 @@ import { Prisma, Reservation } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 import { Decimal } from "decimal.js";
+
 // ROUTES
-// create new reservation
+
+// create new reservation[Service/Payment]
 router.post(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -59,7 +61,7 @@ router.delete(
   }
 );
 
-// update reservations
+// update reservation [Payment/Service]
 router.patch(
   "/reservation/:id",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -67,20 +69,26 @@ router.patch(
     try {
       const { Service = [], Payment = [], ...data } = req.body;
 
-      if (data.adultNumber) data.adultNumber = parseInt(data.adultNumber);
-      if (data.childNumber) data.childNumber = parseInt(data.childNumber);
-      if (data.roomId) data.roomId = parseInt(data.roomId);
-      if (data.guestId) data.guestId = parseInt(data.guestId);
-      if (data.staffId) data.staffId = parseInt(data.staffId);
-      if (data.roomTotal) data.roomTotal = parseFloat(data.roomTotal);
-      if (data.serviceTotal) data.serviceTotal = parseFloat(data.serviceTotal);
-      if (data.netTotal) data.netTotal = parseFloat(data.netTotal);
-      if (data.taxTotal) data.taxTotal = parseFloat(data.taxTotal);
-      if (data.subTotal) data.subTotal = parseFloat(data.subTotal);
-      if (data.paid) data.paid = parseFloat(data.paid);
-      if (data.balance) data.balance = parseFloat(data.balance);
-      if (data.discount) data.discount = parseFloat(data.discount);
+      // Parse numeric values
+      const numericFields = [
+        "adultNumber",
+        "childNumber",
+        "roomId",
+        "guestId",
+        "staffId",
+        "roomTotal",
+        "serviceTotal",
+        "netTotal",
+        "taxTotal",
+        "subTotal",
+        "paid",
+        "balance",
+        "discount",
+      ];
 
+      numericFields.forEach((field) => {
+        if (data[field]) data[field] = parseFloat(data[field]);
+      });
       const reservationData = {
         ...data,
       };
@@ -95,13 +103,46 @@ router.patch(
         };
       }
 
-      if (Payment.length > 0) {
+      // Upsert Payments
+      // if (Payment.length > 0) {
+      //   reservationData.Payment = {
+      //     upsert: Payment.map((payment: Payment) => ({
+      //       create: payment,
+      //       where: { id: payment.id },
+      //       update: {},
+      //     })),
+      //   };
+      // }
+
+      // if (Payment.length > 0) {
+      //   reservationData.Payment = {
+      //     upsert: Payment.map((payment: Payment) => ({
+      //       create: payment.id ? undefined : payment,
+      //       where: payment.id ? { id: payment.id } : undefined,
+      //       update: payment.id ? payment : undefined,
+      //     })),
+      //   };
+      // }
+	
+	//allow new paymenrs to be added
+      
+	if (Payment.length > 0) {
         reservationData.Payment = {
-          upsert: Payment.map((payment: Payment) => ({
-            where: { id: payment.id },
-            update: payment,
-            create: payment,
-          })),
+          upsert: Payment.map((payment: Payment) => {
+            if (!payment.id) {
+              return {
+ 		    create: payment,
+                update: {},
+               
+              };
+            } else {
+              return {
+                where: { id: payment.id },
+                update: payment,
+                create: {},
+              };
+            }
+          }),
         };
       }
 
@@ -109,28 +150,6 @@ router.patch(
         where: { id: parseInt(req.params.id) },
         data: reservationData,
       });
-      // const reservation = await prisma.reservation.update({
-      //   where: { id: parseInt(req.params.id) },
-      //   data: {
-      //     ...data,
-      //     Service: {
-      //       upsert:
-      //         Service?.map((service: Service) => ({
-      //           where: { id: service.id },
-      //           update: service,
-      //           create: service,
-      //         })) || [],
-      //     },
-      //     Payment: {
-      //       upsert:
-      //         Payment?.map((payment: Payment) => ({
-      //           where: { id: payment.id },
-      //           update: payment,
-      //           create: payment,
-      //         })) || [],
-      //     },
-      //   },
-      // });
 
       // Update the room's vacant field based on the reservation status
       if (data.status === "CHECKIN") {
@@ -151,7 +170,7 @@ router.patch(
   }
 );
 
-// fetch all reservations
+// fetch all reservations[with pagination]
 router.get(
   "/reservations",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -188,7 +207,7 @@ router.get(
   }
 );
 
-// fetch single reservation
+// fetch single reservation[Payment/Service]
 router.get(
   "/reservation/:id",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -215,7 +234,7 @@ router.get(
   }
 );
 
-// fetch reservations by guest name
+// Search reservations by guest name
 router.get(
   "/searchreservation/:guestname",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -270,7 +289,7 @@ router.get(
   }
 );
 
-// fetch all reservations and revenue
+// fetch all reservations and revenue[Last 30days and Yesterday]
 router.get(
   "/reservations/revenue",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -315,6 +334,7 @@ router.get(
   }
 );
 
+//return monthly reservations[object {months:revenue}]
 router.get(
   "/reservations/revenue/monthly",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -353,6 +373,8 @@ router.get(
     }
   }
 );
+
+//Fetch this week's revenue [object {day:revenue}]
 
 router.get(
   "/reservations/revenue/weekly",

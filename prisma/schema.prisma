@@ -129,6 +129,12 @@ model Tax {
   ratio Decimal
 }
 
+model Discount {
+  id    Int     @id @default(autoincrement())
+  name  String
+  ratio Decimal
+}
+
 model PaymentMode {
   id   Int    @id @default(autoincrement())
   name String
