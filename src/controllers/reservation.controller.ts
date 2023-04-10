@@ -89,21 +89,21 @@ router.patch(
       numericFields.forEach((field) => {
         if (data[field]) data[field] = parseFloat(data[field]);
       });
-      const reservationData = {
-        ...data,
-      };
+      // const reservationData = {
+      //   ...data,
+      // };
 
-      if (Service.length > 0) {
-        reservationData.Service = {
-          upsert: Service.map((service: Service) => ({
-            where: { id: service.id },
-            update: service,
-            create: service,
-          })),
-        };
-      }
+      // if (Service.length > 0) {
+      //   reservationData.Service = {
+      //     upsert: Service.map((service: Service) => ({
+      //       where: { id: service.id },
+      //       update: service,
+      //       create: service,
+      //     })),
+      //   };
+      // }
 
-      // Upsert Payments
+      // // Upsert Payments
       // if (Payment.length > 0) {
       //   reservationData.Payment = {
       //     upsert: Payment.map((payment: Payment) => ({
@@ -114,37 +114,15 @@ router.patch(
       //   };
       // }
 
-      // if (Payment.length > 0) {
-      //   reservationData.Payment = {
-      //     upsert: Payment.map((payment: Payment) => ({
-      //       create: payment.id ? undefined : payment,
-      //       where: payment.id ? { id: payment.id } : undefined,
-      //       update: payment.id ? payment : undefined,
-      //     })),
-      //   };
-      // }
-	
-	//allow new paymenrs to be added
-      
-	if (Payment.length > 0) {
-        reservationData.Payment = {
-          upsert: Payment.map((payment: Payment) => {
-            if (!payment.id) {
-              return {
- 		    create: payment,
-                update: {},
-               
-              };
-            } else {
-              return {
-                where: { id: payment.id },
-                update: payment,
-                create: {},
-              };
-            }
-          }),
-        };
-      }
+      const reservationData = {
+        ...data,
+        Service: {
+          create: Service,
+        },
+        Payment: {
+          create: Payment,
+        },
+      };
 
       const reservation = await prisma.reservation.update({
         where: { id: parseInt(req.params.id) },
