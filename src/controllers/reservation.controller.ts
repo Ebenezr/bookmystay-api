@@ -113,14 +113,33 @@ router.patch(
       //     })),
       //   };
       // }
+      const reservationId = parseInt(req.params.id);
+
+      // Delete current Service and Payment records for the reservation
+      await prisma.service.deleteMany({
+        where: { reservationId },
+      });
+
+      await prisma.payment.deleteMany({
+        where: { reservationId },
+      });
+
+      // Create new Service and Payment records for the reservation
+      const serviceRecords = Service.map((service: Service) => ({
+        ...service,
+      }));
+
+      const paymentRecords = Payment.map((payment: Payment) => ({
+        ...payment,
+      }));
 
       const reservationData = {
         ...data,
         Service: {
-          create: Service,
+          create: serviceRecords,
         },
         Payment: {
-          create: Payment,
+          create: paymentRecords,
         },
       };
 
