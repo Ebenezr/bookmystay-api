@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-
+import { Payment, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -53,7 +53,7 @@ router.patch(
   }
 );
 
-//  fetch all payment
+// fetch all payment
 router.get(
   "/payments",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -62,9 +62,16 @@ router.get(
       const limit = parseInt(req.query.limit as string, 10) || 10;
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
+      const sortByPaymentMode = req.query.sortByPaymentMode as string;
+      const sortOrder = req.query.sortOrder as Prisma.SortOrder;
+
+      const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
+        sortByPaymentMode ? { PaymentMode: sortOrder } : undefined;
+
       const payments = await prisma.payment.findMany({
         skip: startIndex,
         take: limit,
+        orderBy: orderBy,
       });
 
       const totalItems = await prisma.payment.count();
@@ -82,6 +89,47 @@ router.get(
   }
 );
 
+router.get(
+  "/payments/:paymentMode",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paymentMode = req.params.paymentMode as Payment["PaymentMode"];
+      const sortOrder = req.query.sortOrder as Prisma.SortOrder;
+
+      const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
+        paymentMode && sortOrder ? { PaymentMode: sortOrder } : undefined;
+
+      const payments = await prisma.payment.findMany({
+        where: {
+          PaymentMode: paymentMode,
+        },
+        skip: startIndex,
+        take: limit,
+        orderBy: orderBy,
+      });
+
+      const totalItems = await prisma.payment.count({
+        where: {
+          PaymentMode: paymentMode,
+        },
+      });
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: payments.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 // fetch single payment
 router.get(
   "/payment/:id",
