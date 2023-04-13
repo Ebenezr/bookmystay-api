@@ -421,46 +421,6 @@ router.get(
     }
   }
 );
-// router.get(
-//   "/reservations/revenue/weekly",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const currentWeekStart = getStartOfWeek(new Date());
-//       const dailyRevenue: Record<string, number> = {};
-
-//       for (let day = 0; day < 7; day++) {
-//         const startDate = new Date(currentWeekStart.valueOf());
-//         startDate.setDate(startDate.getDate() + day);
-//         const endDate = new Date(startDate.valueOf());
-//         endDate.setDate(endDate.getDate() + 1);
-
-//         const dailyRevenueResult = await prisma.reservation.aggregate({
-//           where: {
-//             checkOut: {
-//               gte: startDate,
-//               lt: endDate,
-//             },
-//           },
-//           _sum: {
-//             paid: true,
-//           },
-//         });
-
-//         const dayName = startDate.toLocaleString("default", {
-//           weekday: "long",
-//         });
-//         const paidAmount = dailyRevenueResult._sum?.paid;
-//         dailyRevenue[dayName] = paidAmount
-//           ? new Decimal(paidAmount).toNumber()
-//           : 0;
-//       }
-
-//       res.json(dailyRevenue);
-//     } catch (error: any) {
-//       next(error);
-//     }
-//   }
-// );
 
 router.get(
   "/reservations/staff-sales",
