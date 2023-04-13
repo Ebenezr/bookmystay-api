@@ -70,11 +70,12 @@ model RoomAmenity {
 }
 
 model RoomType {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  Room      Room[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  Room        Room[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Reservation Reservation[]
 }
 
 model Bed {
@@ -103,6 +104,8 @@ model Reservation {
   note         String?           @db.Text
   Room         Room              @relation(fields: [roomId], references: [id])
   roomId       Int
+  RoomType     RoomType          @relation(fields: [roomTypeId], references: [id])
+  roomTypeId   Int               @default(1)
   Guest        Guest             @relation(fields: [guestId], references: [id], onDelete: Cascade)
   guestId      Int
   roomTotal    Decimal?          @default(0)
