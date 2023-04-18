@@ -184,8 +184,20 @@ router.get(
         skip: startIndex,
         take: limit,
         include: {
-          Service: true,
-          Payment: true,
+          Service: {
+            select: {
+              type: true,
+              amount: true,
+              quantity: true,
+            },
+          },
+          Payment: {
+            select: {
+              PaymentMode: true,
+              amount: true,
+              referenceId: true,
+            },
+          },
         },
       });
 
