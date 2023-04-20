@@ -53,6 +53,68 @@ router.patch(
   }
 );
 
+router.get(
+  "/services/:from/:to",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { from, to } = req.params;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const service = await prisma.service.findMany({
+        where: {
+          AND: [
+            {
+              createdAt: {
+                gte: new Date(from),
+              },
+            },
+            {
+              createdAt: {
+                lte: new Date(to),
+              },
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: startIndex,
+        take: limit,
+      });
+
+      const totalItems = await prisma.service.count({
+        where: {
+          AND: [
+            {
+              createdAt: {
+                gte: new Date(from),
+              },
+            },
+            {
+              createdAt: {
+                lte: new Date(to),
+              },
+            },
+          ],
+        },
+      });
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: service.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 //  fetch all service
 router.get(
   "/services",
