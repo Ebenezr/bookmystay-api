@@ -215,6 +215,69 @@ router.get(
     }
   }
 );
+// get reservation on a particular date range with pagination
+router.get(
+  "/reservations/:from/:to",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { from, to } = req.params;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const reservation = await prisma.reservation.findMany({
+        where: {
+          AND: [
+            {
+              bookTime: {
+                gte: new Date(from),
+              },
+            },
+            {
+              bookTime: {
+                lte: new Date(to),
+              },
+            },
+          ],
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: startIndex,
+        take: limit,
+      });
+
+      const totalItems = await prisma.reservation.count({
+        where: {
+          AND: [
+            {
+              bookTime: {
+                gte: new Date(from),
+              },
+            },
+            {
+              bookTime: {
+                lte: new Date(to),
+              },
+            },
+          ],
+        },
+      });
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: reservation.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+// url: reservation/2021-01-01/2021-01-31
 
 // fetch single reservation[Payment/Service]
 router.get(
