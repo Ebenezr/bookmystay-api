@@ -184,7 +184,12 @@ router.get(
         },
       });
 
-      const totalItems = await prisma.room.count();
+      const totalItems = await prisma.room.count({
+        where: {
+          vacant: vacant === "true" ? true : false,
+          availabilityStatus: availabilityStatus === "true" ? true : false,
+        },
+      });
 
       res.status(200).json({
         currentPage: page,
