@@ -155,6 +155,50 @@ router.get(
   }
 );
 
+//  ffilter rooms
+router.get(
+  "/rooms/filter",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { vacant, availabilityStatus } = req.query;
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const rooms = await prisma.room.findMany({
+        skip: startIndex,
+
+        take: limit,
+        where: {
+          vacant: vacant === "true" ? true : false,
+          availabilityStatus: availabilityStatus === "true" ? true : false,
+        },
+        include: {
+          Bed: true,
+          RoomAmenity: {
+            select: {
+              amenity: true,
+            },
+          },
+        },
+      });
+
+      const totalItems = await prisma.room.count();
+
+      res.status(200).json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: rooms.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // fetch single room
 router.get(
   "/room/:id",
