@@ -13,7 +13,7 @@ router.post(
     try {
       console.log(req.body);
       // check if there is already an guest with the same email address
-      const imgUrl = req.body.imgUrl ? `/images/${req.body.imgUrl}` : null;
+      const imgUrl = req.body.imgUrl ? `${req.body.imgUrl}` : null;
       const result = await prisma.guest.create({
         data: { ...req.body, imgUrl },
       });
@@ -51,17 +51,21 @@ router.patch(
   ) => {
     const { id } = req.params;
     try {
+      // If an image is uploaded, update the imgUrl
+      const imgUrl = req.body.imgUrl ? `${req.body.imgUrl}` : null;
+      const data: UpdateGuestPayload = { ...req.body, imgUrl };
+
       const guest = await prisma.guest.update({
         where: { id: Number(id) },
-        data: { ...req.body },
+        data,
       });
+
       res.status(202).json(guest);
     } catch (error) {
       next(error);
     }
   }
 );
-
 // fetch all guests
 router.get(
   "/guests",

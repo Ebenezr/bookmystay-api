@@ -6,6 +6,7 @@ export interface UpdateGuestPayload {
   email: string;
   gender: "MALE" | "FEMALE" | "OTHER";
   nationality: string;
+  imgUrl?: string | null;
 }
 
 export interface UpdateStaffPayload {
