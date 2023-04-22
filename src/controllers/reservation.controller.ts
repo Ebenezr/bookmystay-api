@@ -276,10 +276,17 @@ router.get(
 );
 // get reservation on a particular date range with pagination
 router.get(
-  "/reservations/:from/:to",
+  "/reservationsfilter/:from/:to",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { from, to } = req.params;
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
+      if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+        // handle invalid date strings
+        return res.status(400).json({ message: "Invalid date string" });
+      }
+
       const page = parseInt(req.query.page as string, 10) || 1;
       const limit = parseInt(req.query.limit as string, 10) || 10;
       const startIndex = (page - 1) * limit;
@@ -290,12 +297,12 @@ router.get(
           AND: [
             {
               bookTime: {
-                gte: new Date(from),
+                gte: new Date(fromDate),
               },
             },
             {
               bookTime: {
-                lte: new Date(to),
+                lte: new Date(toDate),
               },
             },
           ],
@@ -312,12 +319,12 @@ router.get(
           AND: [
             {
               bookTime: {
-                gte: new Date(from),
+                gte: new Date(fromDate),
               },
             },
             {
               bookTime: {
-                lte: new Date(to),
+                lte: new Date(toDate),
               },
             },
           ],
