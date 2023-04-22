@@ -25,7 +25,7 @@ router.post(
     if (!req.file) {
       res.status(400).json({ error: "No file uploaded." });
     } else {
-      res.status(200).json({ imageUrl: `/images/${req.file.filename}` });
+      res.status(200).json({ imageUrl: `${req.file.filename}` });
     }
   }
 );
