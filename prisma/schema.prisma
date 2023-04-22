@@ -21,6 +21,8 @@ model Guest {
   Reservation Reservation[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  imgUrl      String?
+  nationalId  String?
 
   @@index(fields: [name], type: Hash)
 }
