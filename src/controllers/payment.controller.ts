@@ -149,10 +149,12 @@ router.get(
 );
 
 router.get(
-  "/payments/:from/:to",
+  "/paymentsfilter/:from/:to",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { from, to } = req.params;
+      const fromDate = new Date(from);
+      const toDate = new Date(to);
       const page = parseInt(req.query.page as string, 10) || 1;
       const limit = parseInt(req.query.limit as string, 10) || 10;
       const startIndex = (page - 1) * limit;
@@ -163,12 +165,12 @@ router.get(
           AND: [
             {
               createdAt: {
-                gte: new Date(from),
+                gte: new Date(fromDate),
               },
             },
             {
               createdAt: {
-                lte: new Date(to),
+                lte: new Date(toDate),
               },
             },
           ],
@@ -185,12 +187,12 @@ router.get(
           AND: [
             {
               createdAt: {
-                gte: new Date(from),
+                gte: new Date(fromDate),
               },
             },
             {
               createdAt: {
-                lte: new Date(to),
+                lte: new Date(toDate),
               },
             },
           ],
