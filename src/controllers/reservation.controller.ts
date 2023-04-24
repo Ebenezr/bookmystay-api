@@ -438,6 +438,22 @@ router.get(
       const lastThirtyDays = new Date();
       lastThirtyDays.setDate(lastThirtyDays.getDate() - 30);
 
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const todayRevenue = await prisma.reservation.aggregate({
+        where: {
+          checkIn: {
+            gte: today,
+          },
+        },
+        _sum: {
+          paid: true,
+          roomTotal: true,
+          serviceTotal: true,
+        },
+      });
+
       const yesterdayRevenue = await prisma.reservation.aggregate({
         where: {
           checkOut: {
@@ -465,6 +481,9 @@ router.get(
       res.json({
         yesterdayRevenue: yesterdayRevenue._sum?.paid ?? 0,
         lastThirtyDaysRevenue: lastThirtyDaysRevenue._sum?.paid ?? 0,
+        todayRevenue: todayRevenue._sum?.paid ?? 0,
+        todayRoomTotal: todayRevenue._sum?.roomTotal ?? 0,
+        todayServiceTotal: todayRevenue._sum?.serviceTotal ?? 0,
       });
     } catch (error: any) {
       next(error);
