@@ -258,64 +258,7 @@ router.get(
   }
 );
 
-// router.get(
-//   "/rooms/stats",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const currentDate = new Date();
 
-//       const checkInsToday = await prisma.reservation.count({
-//         where: {
-//           checkIn: {
-//             gte: startOfDay(currentDate),
-//             lte: endOfDay(currentDate),
-//           },
-//         },
-//       });
-
-//       const checkOutsToday = await prisma.reservation.count({
-//         where: {
-//           checkOut: {
-//             gte: startOfDay(currentDate),
-//             lte: endOfDay(currentDate),
-//           },
-//         },
-//       });
-
-//       const todaysReservations = await prisma.reservation.findMany({
-//         where: {
-//           checkIn: {
-//             lte: endOfDay(currentDate),
-//           },
-//           checkOut: {
-//             gte: startOfDay(currentDate),
-//           },
-//         },
-//         select: {
-//           roomId: true,
-//         },
-//       });
-
-//       const todaysRoomIds = todaysReservations.map(
-//         (reservation) => reservation.roomId
-//       );
-
-//       const occupiedRoomsToday = todaysRoomIds.length;
-//       const totalRooms = await prisma.room.count();
-//       const vacantRoomsToday = totalRooms - occupiedRoomsToday;
-
-//       res.status(200).json({
-//         checkInsToday,
-//         checkOutsToday,
-//         totalRooms,
-//         vacantRoomsToday,
-//         occupiedRoomsToday,
-//       });
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
 // fetch all room types no pagination
 router.get(
   "/rooms/nofilter",

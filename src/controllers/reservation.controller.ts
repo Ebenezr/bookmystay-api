@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { Payment, PrismaClient, Service } from "@prisma/client";
+import {
+  Payment,
+  PrismaClient,
+  ResavationStatus,
+  Service,
+} from "@prisma/client";
 import { Prisma, Reservation } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
@@ -658,6 +663,60 @@ router.get(
   }
 );
 
+router.get(
+  "/reservations/filter",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const status = toResavationStatus(req.query.status as string);
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const reservationFilter = status ? { status: { equals: status } } : {};
+
+      const reservation = await prisma.reservation.findMany({
+        where: reservationFilter,
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: startIndex,
+        take: limit,
+        include: {
+          Service: {
+            select: {
+              type: true,
+              amount: true,
+              quantity: true,
+            },
+          },
+          Payment: {
+            select: {
+              PaymentMode: true,
+              amount: true,
+              referenceId: true,
+            },
+          },
+        },
+      });
+
+      const totalItems = await prisma.reservation.count({
+        where: reservationFilter,
+      });
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: reservation.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 export default router;
 
 function getStartOfWeek(date: Date): Date {
@@ -666,4 +725,10 @@ function getStartOfWeek(date: Date): Date {
   const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is Sunday
   startOfWeek.setDate(diff);
   return startOfWeek;
+}
+
+function toResavationStatus(value: string): ResavationStatus | undefined {
+  return Object.values(ResavationStatus).includes(value as ResavationStatus)
+    ? (value as ResavationStatus)
+    : undefined;
 }
