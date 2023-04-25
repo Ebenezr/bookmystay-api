@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from "express";
-import { Payment, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
@@ -63,7 +63,7 @@ router.get(
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
       const sortByPaymentMode = req.query.sortByPaymentMode as string;
-      const sortOrder = req.query.sortOrder as Prisma.SortOrder;
+      const sortOrder = req.query.sortOrder as any;
 
       const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
         sortByPaymentMode ? { PaymentMode: sortOrder } : undefined;
@@ -97,8 +97,8 @@ router.get(
       const limit = parseInt(req.query.limit as string, 10) || 10;
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
-      const paymentMode = req.params.paymentMode as Payment["PaymentMode"];
-      const sortOrder = req.query.sortOrder as Prisma.SortOrder;
+      const paymentMode = req.params.paymentMode as any;
+      const sortOrder = req.query.sortOrder as any;
 
       const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
         paymentMode && sortOrder ? { PaymentMode: sortOrder } : undefined;
