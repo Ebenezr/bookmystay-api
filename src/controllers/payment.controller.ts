@@ -65,8 +65,9 @@ router.get(
       const sortByPaymentMode = req.query.sortByPaymentMode as string;
       const sortOrder = req.query.sortOrder as any;
 
-      const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
-        sortByPaymentMode ? { PaymentMode: sortOrder } : undefined;
+      const orderBy: any | undefined = sortByPaymentMode
+        ? { PaymentMode: sortOrder }
+        : undefined;
 
       const payments = await prisma.payment.findMany({
         skip: startIndex,
@@ -100,7 +101,7 @@ router.get(
       const paymentMode = req.params.paymentMode as any;
       const sortOrder = req.query.sortOrder as any;
 
-      const orderBy: Prisma.PaymentOrderByWithRelationInput | undefined =
+      const orderBy: any | undefined =
         paymentMode && sortOrder ? { PaymentMode: sortOrder } : undefined;
 
       const payments = await prisma.payment.findMany({
