@@ -4,7 +4,7 @@ services:
   api:
     build: .
     ports:
-      - "3000:3000"
+      - "5000:5000"
     environment:
       - DATABASE_URL=postgres://prisma:prisma@db:5432/db_name
     depends_on:
