@@ -258,7 +258,6 @@ router.get(
   }
 );
 
-
 // fetch all room types no pagination
 router.get(
   "/rooms/nofilter",
@@ -324,7 +323,7 @@ router.get(
       });
 
       const todaysRoomIds = todaysReservations.map(
-        (reservation) => reservation.roomId
+        (reservation: any) => reservation.roomId
       );
 
       const occupiedRoomsToday = todaysRoomIds.length;
@@ -365,7 +364,7 @@ router.get(
       });
 
       const yesterdayRoomIds = yesterdayReservations.map(
-        (reservation) => reservation.roomId
+        (reservation: any) => reservation.roomId
       );
 
       const occupiedRoomsYesterday = yesterdayRoomIds.length;

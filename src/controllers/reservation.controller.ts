@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response, Router } from "express";
-import {
-  Payment,
-  PrismaClient,
-  ResavationStatus,
-  Service,
-} from "@prisma/client";
-import { Prisma, Reservation } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 import { Decimal } from "decimal.js";
 
+enum ReservationStatus {
+  NEW = "NEW",
+  CONFIRMED = "CONFIRMED",
+  CHECKIN = "CHECKIN",
+  CANCELED = "CANCELED",
+  UNCONFIRMED = "UNCONFIRMED",
+  CHECKOUT = "CHECKOUT",
+}
 // ROUTES
 
 // create new reservation[Service/Payment]
@@ -94,30 +97,7 @@ router.patch(
       numericFields.forEach((field) => {
         if (data[field]) data[field] = parseFloat(data[field]);
       });
-      // const reservationData = {
-      //   ...data,
-      // };
 
-      // if (Service.length > 0) {
-      //   reservationData.Service = {
-      //     upsert: Service.map((service: Service) => ({
-      //       where: { id: service.id },
-      //       update: service,
-      //       create: service,
-      //     })),
-      //   };
-      // }
-
-      // // Upsert Payments
-      // if (Payment.length > 0) {
-      //   reservationData.Payment = {
-      //     upsert: Payment.map((payment: Payment) => ({
-      //       create: payment,
-      //       where: { id: payment.id },
-      //       update: {},
-      //     })),
-      //   };
-      // }
       const reservationId = parseInt(req.params.id);
 
       // Delete current Service and Payment records for the reservation
@@ -130,11 +110,11 @@ router.patch(
       });
 
       // Create new Service and Payment records for the reservation
-      const serviceRecords = Service.map((service: Service) => ({
+      const serviceRecords = Service.map((service: any) => ({
         ...service,
       }));
 
-      const paymentRecords = Payment.map((payment: Payment) => ({
+      const paymentRecords = Payment.map((payment: any) => ({
         ...payment,
       }));
 
@@ -611,7 +591,7 @@ router.get(
 
       const staffSales: Record<number, number> = {};
 
-      staffSalesResult.forEach((staffSale) => {
+      staffSalesResult.forEach((staffSale: any) => {
         const paidAmount = staffSale._sum.paid;
         staffSales[staffSale.staffId] = paidAmount
           ? new Decimal(paidAmount).toNumber()
@@ -727,8 +707,8 @@ function getStartOfWeek(date: Date): Date {
   return startOfWeek;
 }
 
-function toResavationStatus(value: string): ResavationStatus | undefined {
-  return Object.values(ResavationStatus).includes(value as ResavationStatus)
-    ? (value as ResavationStatus)
+function toResavationStatus(value: string): ReservationStatus | undefined {
+  return Object.values(ReservationStatus).includes(value as ReservationStatus)
+    ? (value as ReservationStatus)
     : undefined;
 }
