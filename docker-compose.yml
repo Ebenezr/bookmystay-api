@@ -9,6 +9,10 @@ services:
       - DATABASE_URL=postgres://prisma:prisma@db:5432/db_name
     depends_on:
       - db
+    networks:
+      - my_network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
   db:
     image: postgres:13
@@ -19,6 +23,12 @@ services:
       - POSTGRES_DB=db_name
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - my_network
 
 volumes:
   db-data:
+
+networks:
+  my_network:
+    driver: bridge

@@ -43,7 +43,11 @@ router.post(
       const password = req.body.password;
       const hashedPassword = await bcrypt.hash(password, 10);
       const result = await prisma.user.create({
-        data: { ...req.body, password: hashedPassword },
+        data: {
+          ...req.body,
+          password: hashedPassword,
+          superuser: req.body.superuser || false,
+        },
       });
 
       res.json(result);
@@ -62,6 +66,9 @@ router.delete(
       const user = await prisma.user.delete({
         where: { id: Number(id) },
       });
+      if (user && user.superuser) {
+        return res.status(403).json({ error: "Superuser cannot be deleted" });
+      }
       res.json(user);
     } catch (error) {
       next(error);

@@ -8,7 +8,8 @@
     "allowSyntheticDefaultImports":true,
     "target": "es6",
     "outDir": "dist",
+    "forceConsistentCasingInFileNames": true,
     "strict": true
   },
-  "include":["src/"]
+  "include": ["src/**/*", "prisma/**/*"],
 }

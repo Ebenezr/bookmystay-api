@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  seed     = "src/seed.ts"
 }
 
 datasource db {
@@ -195,14 +196,15 @@ model User {
   email                String        @unique
   password             String?
   phone                String
-  Department           Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  departmentId         Int
+  Department           Department?   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId         Int?
   activeStatus         Boolean       @default(true)
   createdAt            DateTime      @default(now())
   updatedAt            DateTime      @updatedAt
   Reservation          Reservation[]
   passwordResetToken   String?       @unique
   passwordResetExpires DateTime?
+  superuser            Boolean       @default(false)
 
   @@index([departmentId])
 }

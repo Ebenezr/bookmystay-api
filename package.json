@@ -8,8 +8,10 @@
     "prisma": "prisma",
     "generate": "prisma generate",
     "build": "tsc",
-    "prestart": "npx prisma migrate deploy && yarn generate && yarn build",
-    "start": "node dist/index.js"
+    "prisma:migrate": "npx prisma migrate dev --name init",
+    "prestart": "yarn generate && yarn seed && yarn build",
+    "start": "yarn seed && node dist/index.js",
+    "seed": "ts-node src/seed.ts"
   },
   "author": "Ebenezr",
   "license": "MIT",
