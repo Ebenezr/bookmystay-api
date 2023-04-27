@@ -19,8 +19,8 @@ export async function seed(prisma: PrismaClient) {
         password: hashedPassword,
         name: "Superuser",
         superuser: true,
-        phone: "1234567890",
-
+        phone: "0706731810",
+        role: "ADMIN",
       },
     });
     console.log("Superuser created.");

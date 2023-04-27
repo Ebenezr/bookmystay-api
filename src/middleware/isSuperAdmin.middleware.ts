@@ -10,13 +10,13 @@ export async function isSuperAdmin(
   next: NextFunction
 ) {
   try {
-    const userId = req.userId; // Assuming you have a userId field in the request object
+    const userId = req.query.userId;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: Number(userId) },
     });
 
     if (!user || !user.superuser) {
