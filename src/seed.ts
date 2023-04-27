@@ -1,11 +1,11 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 export async function seed(prisma: PrismaClient) {
   const superuserEmail =
-    process.env.SUPERUSER_EMAIL || "superuser@roomsoft.com";
+    process.env.SUPERUSER_EMAIL || 'superuser@roomsoft.com';
   const superuserPassword =
-    process.env.SUPERUSER_PASSWORD || "superuser_code_56";
+    process.env.SUPERUSER_PASSWORD || 'superuser_code_56';
 
   const existingSuperuser = await prisma.user.findFirst({
     where: { superuser: true },
@@ -17,15 +17,15 @@ export async function seed(prisma: PrismaClient) {
       data: {
         email: superuserEmail,
         password: hashedPassword,
-        name: "Superuser",
+        name: 'Superuser',
         superuser: true,
-        phone: "0706731810",
-        role: "ADMIN",
+        phone: '0706731810',
+        role: 'ADMIN',
       },
     });
-    console.log("Superuser created.");
+    console.log('Superuser created.');
   } else {
-    console.log("Superuser already exists.");
+    console.log('Superuser already exists.');
   }
 }
 

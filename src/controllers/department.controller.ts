@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new department
 router.post(
-  "/departments",
+  '/departments',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a department
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update department
 router.patch(
-  "/department/:id",
+  '/department/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all department paginated
 router.get(
-  "/departments",
+  '/departments',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -80,12 +80,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // ! fetch all departments no pagination
 router.get(
-  "/departments/all",
+  '/departments/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const department = await prisma.department.findMany({});
@@ -93,12 +93,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single department
 router.get(
-  "/department/:id",
+  '/department/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -106,20 +106,20 @@ router.get(
         where: {
           id: Number(id),
         },
-          include: {
-        User: true,
+        include: {
+          User: true,
         },
       });
       res.status(200).json(department);
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchdepartment/:name",
+  '/searchdepartment/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -132,7 +132,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -140,7 +140,7 @@ router.get(
       });
 
       if (!departments) {
-        return res.status(404).json({ error: "Guest not found" });
+        return res.status(404).json({ error: 'Guest not found' });
       }
 
       const totalItems = await prisma.department.count();
@@ -155,7 +155,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

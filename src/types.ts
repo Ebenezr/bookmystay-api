@@ -4,7 +4,7 @@ export interface UpdateGuestPayload {
   phone1: string;
   phone2: string;
   email: string;
-  gender: "MALE" | "FEMALE" | "OTHER";
+  gender: 'MALE' | 'FEMALE' | 'OTHER';
   nationality: string;
   imgUrl?: string | null;
 }
@@ -12,14 +12,13 @@ export interface UpdateGuestPayload {
 export interface UpdateStaffPayload {
   id?: number;
   name: string;
-  role: "ADMIN" | "USER";
+  role: 'ADMIN' | 'USER';
   email: string;
   password?: string;
   phone: string;
   departmentId: number;
   activeStatus: boolean;
 }
-
 
 // router.post(
 //   "/restore",
@@ -45,7 +44,6 @@ export interface UpdateStaffPayload {
 //     }
 //   }
 // );
-
 
 // router.post(
 //   "/backup",
@@ -118,8 +116,6 @@ export interface UpdateStaffPayload {
 //     }
 //   }
 // );
-
-
 
 // router.post(
 //   "/restore",

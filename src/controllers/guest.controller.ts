@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { UpdateGuestPayload } from "../types";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { UpdateGuestPayload } from '../types';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 // ROUTES
 // create new guest
 router.post(
-  "/guests",
+  '/guests',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       console.log(req.body);
@@ -22,7 +22,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a guest
@@ -38,16 +38,16 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update guests
 router.patch(
-  "/guest/:id",
+  '/guest/:id',
   async (
     req: Request<{ id: number }, {}, UpdateGuestPayload>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const { id } = req.params;
     try {
@@ -64,11 +64,11 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 // fetch all guests
 router.get(
-  "/guests",
+  '/guests',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -78,7 +78,7 @@ router.get(
 
       const guest = await prisma.guest.findMany({
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -96,12 +96,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all room types no pagination
 router.get(
-  "/guests/all",
+  '/guests/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const guest = await prisma.guest.findMany({});
@@ -109,12 +109,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single guest
 router.get(
-  "/guest/:id",
+  '/guest/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -125,19 +125,19 @@ router.get(
       });
 
       if (!guest) {
-        return res.status(404).json({ error: "Guest not found" });
+        return res.status(404).json({ error: 'Guest not found' });
       }
 
       res.status(200).json(guest);
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchguest/:name",
+  '/searchguest/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -150,7 +150,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -158,7 +158,7 @@ router.get(
       });
 
       if (!guests) {
-        return res.status(404).json({ error: "Guest not found" });
+        return res.status(404).json({ error: 'Guest not found' });
       }
 
       const totalItems = await prisma.guest.count();
@@ -173,7 +173,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

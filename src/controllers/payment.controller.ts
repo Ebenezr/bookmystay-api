@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
 // create new payment
 router.post(
-  "/payments",
+  '/payments',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a payment
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update payment
 router.patch(
-  "/payment/:id",
+  '/payment/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all payment
 router.get(
-  "/payments",
+  '/payments',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -87,11 +87,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/payments/:paymentMode",
+  '/payments/:paymentMode',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -129,11 +129,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 // fetch single payment
 router.get(
-  "/payment/:id",
+  '/payment/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -146,11 +146,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/paymentsfilter/:from/:to",
+  '/paymentsfilter/:from/:to',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { from, to } = req.params;
@@ -177,7 +177,7 @@ router.get(
           ],
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -210,13 +210,13 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch payments by name
 // fetch guests by name
 router.get(
-  "/searchpayment/:referenceId",
+  '/searchpayment/:referenceId',
   async (req: Request, res: Response, next: NextFunction) => {
     const { referenceId } = req.params;
     try {
@@ -229,7 +229,7 @@ router.get(
         where: {
           referenceId: {
             contains: referenceId,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -237,7 +237,7 @@ router.get(
       });
 
       if (!rooms) {
-        return res.status(404).json({ error: "Payment not found" });
+        return res.status(404).json({ error: 'Payment not found' });
       }
 
       const totalItems = await prisma.payment.count();
@@ -252,24 +252,24 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 // Add the new endpoint
 router.get(
-  "/payments/revenue/payment-modes",
+  '/payments/revenue/payment-modes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const lastThirtyDays = new Date();
       lastThirtyDays.setDate(lastThirtyDays.getDate() - 30);
 
       const paymentModes = [
-        "BANK",
-        "MPESA",
-        "CHEQUE",
-        "CREDIT",
-        "CASH",
-        "CARD",
+        'BANK',
+        'MPESA',
+        'CHEQUE',
+        'CREDIT',
+        'CASH',
+        'CARD',
       ];
 
       const revenueByPaymentMode = await Promise.all(
@@ -290,7 +290,7 @@ router.get(
           return {
             [mode]: revenue._sum?.amount ?? 0,
           };
-        })
+        }),
       );
 
       // Merge the individual mode objects into a single object
@@ -302,7 +302,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

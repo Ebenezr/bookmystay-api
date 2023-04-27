@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new bed
 router.post(
-  "/beds",
+  '/beds',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a bed
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update bed
 router.patch(
-  "/bed/:id",
+  '/bed/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,11 +50,11 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all bed
-router.get("/beds", async (req: Request, res: Response, next: NextFunction) => {
+router.get('/beds', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query.page as string, 10) || 1;
     const limit = parseInt(req.query.limit as string, 10) || 10;
@@ -82,7 +82,7 @@ router.get("/beds", async (req: Request, res: Response, next: NextFunction) => {
 
 // fetch single bed
 router.get(
-  "/bed/:id",
+  '/bed/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -95,12 +95,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all bed types no pagination
 router.get(
-  "/beds/all",
+  '/beds/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const bed = await prisma.bed.findMany();
@@ -108,12 +108,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchbed/:name",
+  '/searchbed/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, bedType } = req.params;
     try {
@@ -126,7 +126,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -134,7 +134,7 @@ router.get(
       });
 
       if (!beds) {
-        return res.status(404).json({ error: "Bed not found" });
+        return res.status(404).json({ error: 'Bed not found' });
       }
 
       const totalItems = await prisma.bed.count();
@@ -149,7 +149,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

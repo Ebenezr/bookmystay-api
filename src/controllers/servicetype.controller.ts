@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new serviceType
 router.post(
-  "/servicetypes",
+  '/servicetypes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a serviceType
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update serviceType
 router.patch(
-  "/servicetype/:id",
+  '/servicetype/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all serviceType
 router.get(
-  "/servicetypes",
+  '/servicetypes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -83,12 +83,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single serviceType
 router.get(
-  "/servicetype/:id",
+  '/servicetype/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -104,12 +104,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all serviceType types no pagination
 router.get(
-  "/servicetypes/all",
+  '/servicetypes/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const serviceType = await prisma.serviceType.findMany({
@@ -121,11 +121,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/searchservicetype/:code",
+  '/searchservicetype/:code',
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.params;
     try {
@@ -138,7 +138,7 @@ router.get(
         where: {
           type: {
             contains: code,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -146,7 +146,7 @@ router.get(
       });
 
       if (!rooms) {
-        return res.status(404).json({ error: "Service not found" });
+        return res.status(404).json({ error: 'Service not found' });
       }
 
       const totalItems = await prisma.serviceType.count();
@@ -161,7 +161,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

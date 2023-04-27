@@ -1,14 +1,14 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import crypto from "crypto";
-import { serialize } from "cookie";
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import crypto from 'crypto';
+import { serialize } from 'cookie';
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const prisma = new PrismaClient();
 const router = Router();
 
 router.post(
-  "/login",
+  '/login',
 
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -21,21 +21,21 @@ router.post(
         // return an error if
         return res
           .status(400)
-          .json({ success: false, error: "Invalid email or password" });
+          .json({ success: false, error: 'Invalid email or password' });
       }
 
       // Check if user is active
       if (!user.activeStatus) {
         return res
           .status(400)
-          .json({ success: false, error: "User account is inactive" });
+          .json({ success: false, error: 'User account is inactive' });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
         return res
           .status(400)
-          .json({ success: false, error: "Invalid email or password" });
+          .json({ success: false, error: 'Invalid email or password' });
         // throw new Error("Invalid email or password");
       }
 
@@ -45,19 +45,19 @@ router.post(
           email: user.email,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "12h" }
+        { expiresIn: '12h' },
       );
 
       // Set the session cookie
-      const sessionCookie = serialize("session", token, {
+      const sessionCookie = serialize('session', token, {
         httpOnly: true,
-        sameSite: "none",
+        sameSite: 'none',
         maxAge: 12 * 60 * 60, // 12 hours in seconds
-        path: "/",
+        path: '/',
       });
 
       // Add the session cookie to the response header
-      res.setHeader("Set-Cookie", sessionCookie);
+      res.setHeader('Set-Cookie', sessionCookie);
 
       res.json({
         success: true,
@@ -70,12 +70,12 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Add a new route to handle email verification and token generation
 router.post(
-  "/verify-email",
+  '/verify-email',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = req.body;
@@ -84,11 +84,11 @@ router.post(
       if (!user) {
         return res
           .status(400)
-          .json({ success: false, error: "Invalid email address" });
+          .json({ success: false, error: 'Invalid email address' });
       }
 
       // Generate a password reset token
-      const resetToken = crypto.randomBytes(32).toString("hex");
+      const resetToken = crypto.randomBytes(32).toString('hex');
       const passwordResetExpires = new Date(Date.now() + 600000); // Token valid for 10 minutes
 
       // Update the user with the reset token and expiration
@@ -102,18 +102,18 @@ router.post(
 
       res.json({
         success: true,
-        message: "Email verified successfully. Token generated.",
+        message: 'Email verified successfully. Token generated.',
         token: resetToken,
       });
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Add a new route to handle the actual password reset
 router.post(
-  "/reset-password",
+  '/reset-password',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { token, newPassword } = req.body;
@@ -130,7 +130,7 @@ router.post(
       ) {
         return res
           .status(400)
-          .json({ success: false, error: "Invalid or expired token" });
+          .json({ success: false, error: 'Invalid or expired token' });
       }
 
       // Hash the new password
@@ -148,12 +148,12 @@ router.post(
 
       res.json({
         success: true,
-        message: "Password has been reset successfully",
+        message: 'Password has been reset successfully',
       });
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

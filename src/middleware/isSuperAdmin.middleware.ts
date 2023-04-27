@@ -1,18 +1,18 @@
 // isSuperAdmin.ts
-import { NextFunction, Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 export async function isSuperAdmin(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   try {
     const userId = req.query.userId;
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const user = await prisma.user.findUnique({
@@ -20,11 +20,11 @@ export async function isSuperAdmin(
     });
 
     if (!user || !user.superuser) {
-      return res.status(403).json({ message: "Forbidden" });
+      return res.status(403).json({ message: 'Forbidden' });
     }
 
     next();
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", error });
+    res.status(500).json({ message: 'Internal server error', error });
   }
 }

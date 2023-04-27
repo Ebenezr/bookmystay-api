@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new servicelist
 router.post(
-  "/servicelists",
+  '/servicelists',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a servicelist
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update servicelist
 router.patch(
-  "/servicelist/:id",
+  '/servicelist/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all servicelist
 router.get(
-  "/servicelists",
+  '/servicelists',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -80,12 +80,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single servicelist
 router.get(
-  "/servicelist/:id",
+  '/servicelist/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -98,12 +98,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all servicelist types no pagination
 router.get(
-  "/servicelists/all",
+  '/servicelists/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const servicelist = await prisma.serviceList.findMany();
@@ -111,12 +111,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch service by name
 router.get(
-  "/searchservicelist/:code",
+  '/searchservicelist/:code',
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.params;
     try {
@@ -129,7 +129,7 @@ router.get(
         where: {
           name: {
             contains: code,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -137,7 +137,7 @@ router.get(
       });
 
       if (!rooms) {
-        return res.status(404).json({ error: "Service not found" });
+        return res.status(404).json({ error: 'Service not found' });
       }
 
       const totalItems = await prisma.serviceList.count();
@@ -152,7 +152,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

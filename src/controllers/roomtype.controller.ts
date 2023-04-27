@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new roomtype
 router.post(
-  "/roomtypes",
+  '/roomtypes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a roomtype
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update roomtype
 router.patch(
-  "/roomtype/:id",
+  '/roomtype/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all roomtype
 router.get(
-  "/roomtypes",
+  '/roomtypes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -83,12 +83,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all room types no pagination
 router.get(
-  "/roomtypes/all",
+  '/roomtypes/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roomtype = await prisma.roomType.findMany({
@@ -100,12 +100,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single roomtype
 router.get(
-  "/roomtype/:id",
+  '/roomtype/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -121,12 +121,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchroomtype/:name",
+  '/searchroomtype/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -139,7 +139,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         include: {
@@ -150,7 +150,7 @@ router.get(
       });
 
       if (!roomTypes) {
-        return res.status(404).json({ error: "Guest not found" });
+        return res.status(404).json({ error: 'Guest not found' });
       }
 
       const totalItems = await prisma.roomType.count();
@@ -165,7 +165,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

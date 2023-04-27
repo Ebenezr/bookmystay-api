@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new tax
 router.post(
-  "/taxes",
+  '/taxes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a tax
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update tax
 router.patch(
-  "/tax/:id",
+  '/tax/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all tax
 router.get(
-  "/taxes",
+  '/taxes',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -79,12 +79,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single tax
 router.get(
-  "/tax/:id",
+  '/tax/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -97,12 +97,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch taxes by name
 router.get(
-  "/searchtax/:code",
+  '/searchtax/:code',
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.params;
     try {
@@ -115,7 +115,7 @@ router.get(
         where: {
           name: {
             contains: code,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -123,7 +123,7 @@ router.get(
       });
 
       if (!rooms) {
-        return res.status(404).json({ error: "Tax not found" });
+        return res.status(404).json({ error: 'Tax not found' });
       }
 
       const totalItems = await prisma.tax.count();
@@ -138,7 +138,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

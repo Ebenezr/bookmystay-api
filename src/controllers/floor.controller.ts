@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new floor
 router.post(
-  "/floors",
+  '/floors',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a floor
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update floor
 router.patch(
-  "/floor/:id",
+  '/floor/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all floor paginated
 router.get(
-  "/floors",
+  '/floors',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -83,12 +83,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all floors no pagination
 router.get(
-  "/floors/all",
+  '/floors/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const floor = await prisma.floor.findMany({});
@@ -96,12 +96,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single floor
 router.get(
-  "/floor/:id",
+  '/floor/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -117,12 +117,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchfloor/:name",
+  '/searchfloor/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -135,7 +135,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         include: {
@@ -146,7 +146,7 @@ router.get(
       });
 
       if (!floors) {
-        return res.status(404).json({ error: "Guest not found" });
+        return res.status(404).json({ error: 'Guest not found' });
       }
 
       const totalItems = await prisma.floor.count();
@@ -161,7 +161,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

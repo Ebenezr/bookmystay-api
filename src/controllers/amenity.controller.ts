@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new amenity
 router.post(
-  "/amenitys",
+  '/amenitys',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a amenity
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update amenity
 router.patch(
-  "/amenity/:id",
+  '/amenity/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all amenity
 router.get(
-  "/amenitys",
+  '/amenitys',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -80,12 +80,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single amenity
 router.get(
-  "/amenity/:id",
+  '/amenity/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -98,12 +98,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all amenity types no pagination
 router.get(
-  "/amenitys/all",
+  '/amenitys/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const amenity = await prisma.amenity.findMany();
@@ -111,12 +111,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch guests by name
 router.get(
-  "/searchamenity/:name",
+  '/searchamenity/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name, amenityType } = req.params;
     try {
@@ -129,7 +129,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -137,7 +137,7 @@ router.get(
       });
 
       if (!amenitys) {
-        return res.status(404).json({ error: "Amenity not found" });
+        return res.status(404).json({ error: 'Amenity not found' });
       }
 
       const totalItems = await prisma.amenity.count();
@@ -152,7 +152,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

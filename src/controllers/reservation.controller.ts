@@ -1,20 +1,20 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from 'express';
 import {
   Payment,
   PrismaClient,
   ResavationStatus,
   Service,
-} from "@prisma/client";
-import { Prisma, Reservation } from "@prisma/client";
+} from '@prisma/client';
+import { Prisma, Reservation } from '@prisma/client';
 const prisma = new PrismaClient();
 const router = Router();
-import { Decimal } from "decimal.js";
+import { Decimal } from 'decimal.js';
 
 // ROUTES
 
 // create new reservation[Service/Payment]
 router.post(
-  "/reservations",
+  '/reservations',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { Service, Payment, ...data } = req.body;
@@ -31,12 +31,12 @@ router.post(
       });
 
       // Update the room's vacant field based on the reservation status
-      if (data.status === "CHECKIN") {
+      if (data.status === 'CHECKIN') {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: false },
         });
-      } else if (data.status === "CHECKOUT") {
+      } else if (data.status === 'CHECKOUT') {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: true },
@@ -47,7 +47,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a reservation
@@ -63,12 +63,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update reservation [Payment/Service]
 router.patch(
-  "/reservation/:id",
+  '/reservation/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     // const { id } = req.params;
     try {
@@ -76,19 +76,19 @@ router.patch(
 
       // Parse numeric values
       const numericFields = [
-        "adultNumber",
-        "childNumber",
-        "roomId",
-        "guestId",
-        "staffId",
-        "roomTotal",
-        "serviceTotal",
-        "netTotal",
-        "taxTotal",
-        "subTotal",
-        "paid",
-        "balance",
-        "discount",
+        'adultNumber',
+        'childNumber',
+        'roomId',
+        'guestId',
+        'staffId',
+        'roomTotal',
+        'serviceTotal',
+        'netTotal',
+        'taxTotal',
+        'subTotal',
+        'paid',
+        'balance',
+        'discount',
       ];
 
       numericFields.forEach((field) => {
@@ -154,12 +154,12 @@ router.patch(
       });
 
       // Update the room's vacant field based on the reservation status
-      if (data.status === "CHECKIN") {
+      if (data.status === 'CHECKIN') {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: false },
         });
-      } else if (data.status === "CHECKOUT") {
+      } else if (data.status === 'CHECKOUT') {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: true },
@@ -169,12 +169,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all reservations[with pagination]
 router.get(
-  "/reservations",
+  '/reservations',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -184,14 +184,14 @@ router.get(
 
       const reservation = await prisma.reservation.findMany({
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         where: {
           NOT: {
             AND: [
-              { paidStatus: "PAID" },
+              { paidStatus: 'PAID' },
               {
-                OR: [{ status: "CHECKOUT" }, { status: "CANCELED" }],
+                OR: [{ status: 'CHECKOUT' }, { status: 'CANCELED' }],
               },
             ],
           },
@@ -228,12 +228,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all reservations[with pagination]
 router.get(
-  "/reservations/all",
+  '/reservations/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -243,7 +243,7 @@ router.get(
 
       const reservation = await prisma.reservation.findMany({
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -277,11 +277,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 // get reservation on a particular date range with pagination
 router.get(
-  "/reservationsfilter/:from/:to",
+  '/reservationsfilter/:from/:to',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { from, to } = req.params;
@@ -289,7 +289,7 @@ router.get(
       const toDate = new Date(to);
       if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
         // handle invalid date strings
-        return res.status(400).json({ message: "Invalid date string" });
+        return res.status(400).json({ message: 'Invalid date string' });
       }
 
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -313,7 +313,7 @@ router.get(
           ],
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -346,13 +346,13 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 // url: reservation/2021-01-01/2021-01-31
 
 // fetch single reservation[Payment/Service]
 router.get(
-  "/reservation/:id",
+  '/reservation/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -367,19 +367,19 @@ router.get(
       });
 
       if (!reservation) {
-        return res.status(404).json({ error: "reservation not found" });
+        return res.status(404).json({ error: 'reservation not found' });
       }
 
       res.json(reservation);
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 // Search reservations by guest name
 router.get(
-  "/searchreservation/:guestname",
+  '/searchreservation/:guestname',
   async (req: Request, res: Response, next: NextFunction) => {
     const { guestname } = req.params;
     try {
@@ -393,7 +393,7 @@ router.get(
           Guest: {
             name: {
               contains: guestname,
-              mode: "insensitive",
+              mode: 'insensitive',
             },
           },
         },
@@ -405,7 +405,7 @@ router.get(
       });
 
       if (!reservations) {
-        return res.status(404).json({ error: "Reservation not found" });
+        return res.status(404).json({ error: 'Reservation not found' });
       }
 
       const totalItems = await prisma.reservation.count({
@@ -413,7 +413,7 @@ router.get(
           Guest: {
             name: {
               contains: guestname,
-              mode: "insensitive",
+              mode: 'insensitive',
             },
           },
         },
@@ -429,12 +429,12 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all reservations and revenue[Last 30days and Yesterday]
 router.get(
-  "/reservations/revenue",
+  '/reservations/revenue',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const yesterday = new Date();
@@ -493,12 +493,12 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 //return monthly reservations[object {months:revenue}]
 router.get(
-  "/reservations/revenue/monthly",
+  '/reservations/revenue/monthly',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currentYear = new Date().getFullYear();
@@ -520,8 +520,8 @@ router.get(
           },
         });
 
-        const monthName = startDate.toLocaleString("default", {
-          month: "long",
+        const monthName = startDate.toLocaleString('default', {
+          month: 'long',
         });
         const paidAmount = monthlyRevenueResult._sum?.paid;
         monthlyRevenue[monthName] = paidAmount
@@ -533,12 +533,12 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 //Fetch this week's revenue [object {day:revenue}]
 router.get(
-  "/reservations/revenue/weekly",
+  '/reservations/revenue/weekly',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currentWeekStart = getStartOfWeek(new Date());
@@ -566,8 +566,8 @@ router.get(
             },
           });
 
-          const dayName = startDate.toLocaleString("default", {
-            weekday: "long",
+          const dayName = startDate.toLocaleString('default', {
+            weekday: 'long',
           });
           const paidAmount = dailyRevenueResult._sum?.paid;
           const revenue = paidAmount ? new Decimal(paidAmount).toNumber() : 0;
@@ -584,11 +584,11 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/reservations/staff-sales",
+  '/reservations/staff-sales',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const todayStart = new Date();
@@ -597,7 +597,7 @@ router.get(
       todayEnd.setHours(23, 59, 59, 999);
 
       const staffSalesResult = await prisma.reservation.groupBy({
-        by: ["staffId"],
+        by: ['staffId'],
         where: {
           checkOut: {
             gte: todayStart,
@@ -622,11 +622,11 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/reservations/revenueByDateRange",
+  '/reservations/revenueByDateRange',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const fromDate = req.query.fromDate
@@ -638,7 +638,7 @@ router.get(
 
       if (!fromDate || !toDate) {
         return res.status(400).json({
-          error: "Both fromDate and toDate query parameters are required.",
+          error: 'Both fromDate and toDate query parameters are required.',
         });
       }
 
@@ -660,11 +660,11 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/reservations/filter",
+  '/reservations/filter',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -678,7 +678,7 @@ router.get(
       const reservation = await prisma.reservation.findMany({
         where: reservationFilter,
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -714,7 +714,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

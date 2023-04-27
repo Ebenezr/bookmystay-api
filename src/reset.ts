@@ -1,27 +1,27 @@
-import { PrismaClient } from "@prisma/client";
-import { seed } from "./seed";
+import { PrismaClient } from '@prisma/client';
+import { seed } from './seed';
 
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
   // List your table names here
   const tableNames = [
-    "Guest",
-    "Room",
-    "Amenity",
-    "RoomAmenity",
-    "RoomType",
-    "Bed",
-    "Reservation",
-    "Tax",
-    "Discount",
-    "PaymentMode",
-    "Curency",
-    "Payment",
-    "Service",
-    "ServiceList",
-    "ServiceType",
-    "User",
-    "Floor",
-    "Department",
+    'Guest',
+    'Room',
+    'Amenity',
+    'RoomAmenity',
+    'RoomType',
+    'Bed',
+    'Reservation',
+    'Tax',
+    'Discount',
+    'PaymentMode',
+    'Curency',
+    'Payment',
+    'Service',
+    'ServiceList',
+    'ServiceType',
+    'User',
+    'Floor',
+    'Department',
   ];
 
   // Delete all data from all tables

@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { AnyZodObject } from "zod";
-import { UpdateStaffPayload } from "../types";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { AnyZodObject } from 'zod';
+import { UpdateStaffPayload } from '../types';
 
 // create client with URL
 
-const bcrypt = require("bcryptjs");
+const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 const router = Router();
 
@@ -27,7 +27,7 @@ const validate =
 // ROUTES
 // create new user
 router.post(
-  "/users",
+  '/users',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // check if there is already an user with the same email address
@@ -38,7 +38,7 @@ router.post(
         // return an error if the email is already in use
         return res
           .status(400)
-          .json({ success: false, error: "Email already in use" });
+          .json({ success: false, error: 'Email already in use' });
       }
       const password = req.body.password;
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -54,7 +54,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a user
@@ -67,22 +67,22 @@ router.delete(
         where: { id: Number(id) },
       });
       if (user && user.superuser) {
-        return res.status(403).json({ error: "Superuser cannot be deleted" });
+        return res.status(403).json({ error: 'Superuser cannot be deleted' });
       }
       res.json(user);
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update users
 router.patch(
-  "/user/:id",
+  '/user/:id',
   async (
     req: Request<{ id: number }, {}, UpdateStaffPayload>,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     const { id } = req.params;
     try {
@@ -94,12 +94,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all users
 router.get(
-  "/users",
+  '/users',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -109,7 +109,7 @@ router.get(
 
       const user = await prisma.user.findMany({
         orderBy: {
-          createdAt: "desc",
+          createdAt: 'desc',
         },
         skip: startIndex,
         take: limit,
@@ -127,12 +127,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all room types no pagination
 router.get(
-  "/users/all",
+  '/users/all',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await prisma.user.findMany({});
@@ -140,12 +140,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single user
 router.get(
-  "/user/:id",
+  '/user/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -156,19 +156,19 @@ router.get(
       });
 
       if (!user) {
-        return res.status(404).json({ error: "user not found" });
+        return res.status(404).json({ error: 'user not found' });
       }
 
       res.json(user);
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch users by name
 router.get(
-  "/searchuser/:name",
+  '/searchuser/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -181,7 +181,7 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -189,7 +189,7 @@ router.get(
       });
 
       if (!users) {
-        return res.status(404).json({ error: "user not found" });
+        return res.status(404).json({ error: 'user not found' });
       }
 
       const totalItems = await prisma.user.count();
@@ -204,7 +204,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

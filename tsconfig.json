@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "rootDir":"src",
-    "lib":["esnext"],
-    "esModuleInterop":true,
-    "resolveJsonModule":true,
-    "allowSyntheticDefaultImports":true,
+    "rootDir": "src",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "target": "es6",
     "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
     "strict": true
   },
-  "include": ["src/**/*", "prisma/**/*"],
+  "include": ["src/**/*", "prisma/**/*"]
 }

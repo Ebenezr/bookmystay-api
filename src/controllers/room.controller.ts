@@ -1,13 +1,13 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
-import { startOfDay, endOfDay, addDays } from "date-fns";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
+import { startOfDay, endOfDay, addDays } from 'date-fns';
 const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
 // create new room
 router.post(
-  "/rooms",
+  '/rooms',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { RoomAmenity, ...data } = req.body;
@@ -33,7 +33,7 @@ router.post(
                 amenityId: roomAmenity.amenityId,
               },
             });
-          })
+          }),
         );
 
         // Wait for all RoomAmenity records to be created
@@ -44,7 +44,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a room
@@ -60,12 +60,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update existing room
 router.patch(
-  "/room/:id",
+  '/room/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const roomId = parseInt(req.params.id);
@@ -103,7 +103,7 @@ router.patch(
                 },
               },
             });
-          })
+          }),
         );
 
         // Wait for all RoomAmenity records to be created
@@ -114,12 +114,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all room
 router.get(
-  "/rooms",
+  '/rooms',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -152,12 +152,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  ffilter rooms
 router.get(
-  "/rooms/filter",
+  '/rooms/filter',
   async (req: Request, res: Response, next: NextFunction) => {
     const { vacant, availabilityStatus } = req.query;
     try {
@@ -171,8 +171,8 @@ router.get(
 
         take: limit,
         where: {
-          vacant: vacant === "true" ? true : false,
-          availabilityStatus: availabilityStatus === "true" ? true : false,
+          vacant: vacant === 'true' ? true : false,
+          availabilityStatus: availabilityStatus === 'true' ? true : false,
         },
         include: {
           Bed: true,
@@ -186,8 +186,8 @@ router.get(
 
       const totalItems = await prisma.room.count({
         where: {
-          vacant: vacant === "true" ? true : false,
-          availabilityStatus: availabilityStatus === "true" ? true : false,
+          vacant: vacant === 'true' ? true : false,
+          availabilityStatus: availabilityStatus === 'true' ? true : false,
         },
       });
 
@@ -201,12 +201,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single room
 router.get(
-  "/room/:id",
+  '/room/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -227,20 +227,20 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch all room types no pagination
 router.get(
-  "/rooms/all",
+  '/rooms/all',
   async (req: Request, res: Response, next: NextFunction) => {
     const { vacant, availabilityStatus } = req.query;
 
     try {
       const room = await prisma.room.findMany({
         where: {
-          vacant: vacant === "true" ? true : false,
-          availabilityStatus: availabilityStatus === "true" ? true : false,
+          vacant: vacant === 'true' ? true : false,
+          availabilityStatus: availabilityStatus === 'true' ? true : false,
         },
         include: {
           Bed: true,
@@ -255,13 +255,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
-
 
 // fetch all room types no pagination
 router.get(
-  "/rooms/nofilter",
+  '/rooms/nofilter',
   async (req: Request, res: Response, next: NextFunction) => {
     const { vacant, availabilityStatus } = req.query;
 
@@ -280,11 +279,11 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 router.get(
-  "/rooms/stats",
+  '/rooms/stats',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currentDate = new Date();
@@ -324,7 +323,7 @@ router.get(
       });
 
       const todaysRoomIds = todaysReservations.map(
-        (reservation) => reservation.roomId
+        (reservation) => reservation.roomId,
       );
 
       const occupiedRoomsToday = todaysRoomIds.length;
@@ -365,7 +364,7 @@ router.get(
       });
 
       const yesterdayRoomIds = yesterdayReservations.map(
-        (reservation) => reservation.roomId
+        (reservation) => reservation.roomId,
       );
 
       const occupiedRoomsYesterday = yesterdayRoomIds.length;
@@ -374,19 +373,19 @@ router.get(
       // Calculate percentage change
       const checkInsPercentChange = calculatePercentChange(
         checkInsYesterday,
-        checkInsToday
+        checkInsToday,
       );
       const checkOutsPercentChange = calculatePercentChange(
         checkOutsYesterday,
-        checkOutsToday
+        checkOutsToday,
       );
       const occupiedRoomsPercentChange = calculatePercentChange(
         occupiedRoomsYesterday,
-        occupiedRoomsToday
+        occupiedRoomsToday,
       );
       const vacantRoomsPercentChange = calculatePercentChange(
         vacantRoomsYesterday,
-        vacantRoomsToday
+        vacantRoomsToday,
       );
 
       res.status(200).json({
@@ -407,7 +406,7 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 function calculatePercentChange(oldValue: number, newValue: number): number {
@@ -423,7 +422,7 @@ function calculatePercentChange(oldValue: number, newValue: number): number {
 
 // fetch guests by name
 router.get(
-  "/searchroom/:code",
+  '/searchroom/:code',
   async (req: Request, res: Response, next: NextFunction) => {
     const { code } = req.params;
     try {
@@ -436,7 +435,7 @@ router.get(
         where: {
           code: {
             contains: code,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
         skip: startIndex,
@@ -444,7 +443,7 @@ router.get(
       });
 
       if (!rooms) {
-        return res.status(404).json({ error: "Room not found" });
+        return res.status(404).json({ error: 'Room not found' });
       }
 
       const totalItems = await prisma.room.count();
@@ -459,7 +458,7 @@ router.get(
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

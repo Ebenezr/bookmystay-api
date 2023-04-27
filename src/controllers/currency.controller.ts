@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, Router } from "express";
-import { PrismaClient } from "@prisma/client";
+import { NextFunction, Request, Response, Router } from 'express';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 // create new curency
 router.post(
-  "/currencies",
+  '/currencies',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
@@ -16,7 +16,7 @@ router.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // delete a curency
@@ -32,12 +32,12 @@ router.delete(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // update curency
 router.patch(
-  "/curency/:id",
+  '/curency/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -50,12 +50,12 @@ router.patch(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 //  fetch all curency
 router.get(
-  "/currencies",
+  '/currencies',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currencies = await prisma.curency.findMany();
@@ -64,12 +64,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch single curency
 router.get(
-  "/curency/:id",
+  '/curency/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
@@ -82,12 +82,12 @@ router.get(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // fetch currencies by name
 router.get(
-  "/searchcurency/:name",
+  '/searchcurency/:name',
   async (req: Request, res: Response, next: NextFunction) => {
     const { name } = req.params;
     try {
@@ -95,19 +95,19 @@ router.get(
         where: {
           name: {
             contains: name,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         },
       });
 
       if (!currencies) {
-        return res.status(404).json({ error: "Room not found" });
+        return res.status(404).json({ error: 'Room not found' });
       }
       res.status(200).json(currencies);
     } catch (error: any) {
       next(error);
     }
-  }
+  },
 );
 
 export default router;

@@ -4,38 +4,34 @@
 
 ## Project Description
 
-
-
 ## SCREENSHOTS
-
 
 ## Technologies
 
 ### Front end
 
-* Nextjs(Typescript)
-* Tailwindcss
-* Zustand(State manager)
+- Nextjs(Typescript)
+- Tailwindcss
+- Zustand(State manager)
 
 ### Back end
 
-* Nodejs(Typescript)
-* Prisma
-* Postgresql
-* Cloudinary(Image storage)
-* redis(cache)
+- Nodejs(Typescript)
+- Prisma
+- Postgresql
+- Cloudinary(Image storage)
+- redis(cache)
 
 ## Features
-
 
 ## How to set up and run
 
 ### Dependencies
 
-* yarn
-* node 16
-* npm
-* docker
+- yarn
+- node 16
+- npm
+- docker
 
 ## setup
 
@@ -123,7 +119,7 @@ Copyright[c][2023](bukosia ebenezar)
 
 ## Contact Information
 
-* Email : ebenezarbukosia@gmail.om
+- Email : ebenezarbukosia@gmail.om
 
 ---
 
