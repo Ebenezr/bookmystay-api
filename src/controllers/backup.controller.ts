@@ -21,7 +21,7 @@ router.post(
       const connectionString = process.env.DATABASE_URL || "";
       const connectionParams = parse(connectionString);
 
-      // Replace this with the container name or ID of your Postgres container
+      // The container name or ID of Postgres container
       const postgresContainerName = "/bookmystay-api-db";
 
       // Find the Postgres container
