@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { exec } from 'child_process';
+import { exec as cpExec } from 'child_process';
 import { parse } from 'pg-connection-string';
 import { config as loadEnvConfig } from 'dotenv';
 import { PrismaClient } from '@prisma/client';
@@ -20,83 +20,49 @@ router.post(
     try {
       const connectionString = process.env.DATABASE_URL || '';
       const connectionParams = parse(connectionString);
+      const pgBinPath = 'C:\\Program Files\\PostgreSQL\\15\\bin\\';
+      const pgPassword = process.env.PGPASSWORD || 'postgres';
 
-      // The container name or ID of Postgres container
-      const postgresContainerName = '/bookmystay-api-db';
+      const backupCommand = [
+        `set PGPASSWORD=${pgPassword} &&`,
+        `"${pgBinPath}pg_dump.exe"`,
+        '--no-password',
+        '-U',
+        String(connectionParams.user),
+        '-h',
+        '127.0.0.1',
+        '-p',
+        String(connectionParams.port),
+        '-d',
+        String(connectionParams.database),
+        '-f',
+        'backup.sql',
+      ].join(' ');
 
-      // Find the Postgres container
-      const containers = await docker.listContainers();
-      const postgresContainerInfo = containers.find(
-        (container) =>
-          container.Names && container.Names.includes(postgresContainerName),
-      );
+      cpExec(backupCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Backup error: ${error}`);
+          res.status(500).send('Error backing up the database');
+          return;
+        }
 
-      if (!postgresContainerInfo) {
-        console.log('Postgres container not found');
-        res.status(500).send('Postgres container not found');
-        return;
-      }
-
-      // Create an exec instance with the pg_dump command
-      const execOptions = {
-        Cmd: [
-          'pg_dump',
-          '-U',
-          String(connectionParams.user),
-          '-h',
-          String(connectionParams.host),
-          '-p',
-          String(connectionParams.port),
-          '-d',
-          String(connectionParams.database),
-        ],
-      };
-
-      console.log(execOptions.Cmd.join(' '));
-
-      const exec = await docker
-        .getContainer(postgresContainerInfo.Id)
-        .exec(execOptions);
-
-      // Run the exec instance and capture the output as a stream
-      const stream = await exec.start({ Tty: false });
-
-      console.log('Backup stream started');
-
-      if (stream) {
-        console.log('Backup stream has data');
-
-        // Set the response headers to indicate that this is a download
+        console.log('Database backup completed');
         res.setHeader('Content-Type', 'application/octet-stream');
         res.setHeader('Content-Disposition', 'attachment; filename=backup.sql');
-
-        // Add a listener to the stream's data event to write the data to the response
-        stream.on('data', (chunk) => {
-          console.log('Stream data received:', chunk.toString('utf8'));
-          console.log('Stream data length:', chunk.length);
-          res.write(chunk.toString('utf8'));
+        res.sendFile('backup.sql', { root: '.' }, (err) => {
+          if (err) {
+            next(err);
+          } else {
+            console.log('Backup file sent');
+          }
         });
-
-        // Add a listener to the stream's end event to end the response
-        stream.on('end', () => {
-          console.log('Stream ended');
-          res.end();
-        });
-
-        // Add a listener to the stream's error event to log any errors that occur
-        stream.on('error', (error) => {
-          console.error('Stream error:', error);
-        });
-      } else {
-        console.log('Backup stream is empty');
-        res.status(500).send('Error backing up the database');
-      }
-      console.log('Database backup completed');
+      });
     } catch (error) {
       next(error);
     }
   },
 );
+// Restore Database
 // Restore Database
 router.post(
   '/restore',
@@ -106,63 +72,33 @@ router.post(
       const connectionString = process.env.DATABASE_URL || '';
       const connectionParams = parse(connectionString);
       const filePath = req.body.filePath;
+      const pgBinPath = 'C:\\Program Files\\PostgreSQL\\15\\bin\\';
+      const pgPassword = process.env.PGPASSWORD || 'postgres';
+      const restoreCommand = [
+        `set PGPASSWORD=${pgPassword} &&`,
+        `"${pgBinPath}pg_restore.exe"`,
+        '--no-password',
+        '-U',
+        String(connectionParams.user),
+        '-h',
+        String(connectionParams.host),
+        '-p',
+        String(connectionParams.port),
+        '-d',
+        String(connectionParams.database),
+        '-c',
+        filePath,
+      ].join(' ');
 
-      // Replace this with the container name or ID of your Postgres container
-      const postgresContainerName = '/bookmystay-api-db';
-
-      // Find the Postgres container
-      const containers = await docker.listContainers();
-      const postgresContainerInfo = containers.find(
-        (container) =>
-          container.Names && container.Names.includes(postgresContainerName),
-      );
-
-      if (!postgresContainerInfo) {
-        res.status(500).send('Postgres container not found');
-        return;
-      }
-
-      // Create an exec instance with the pg_restore command
-      const postgresContainer = docker.getContainer(postgresContainerInfo.Id);
-      const execOptions = {
-        Cmd: [
-          'pg_restore',
-          '-U',
-          connectionParams.user,
-          '-h',
-          connectionParams.host,
-          '-p',
-          connectionParams.port,
-          '-d',
-          connectionParams.database,
-          '-c',
-          filePath,
-        ],
-        AttachStdout: true,
-        AttachStderr: true,
-      };
-
-      const exec = await postgresContainer.exec(execOptions);
-
-      // Run the exec instance and capture the output
-      exec.start({}, (error, stream) => {
+      cpExec(restoreCommand, (error, stdout, stderr) => {
         if (error) {
-          console.error(`exec error: ${error}`);
+          console.error(`Restore error: ${error}`);
           res.status(500).send('Error restoring the database');
           return;
         }
 
-        if (stream instanceof Stream) {
-          // Log the output for debugging purposes
-          docker.modem.demuxStream(stream, process.stdout, process.stderr);
-
-          // Close the stream and send a response when the restore is complete
-          stream.on('end', () => {
-            res.status(200).send('Database restore completed');
-          });
-        } else {
-          res.status(500).send('Error: Invalid stream');
-        }
+        console.log('Database restore completed');
+        res.status(200).send('Database restore completed');
       });
     } catch (error) {
       next(error);

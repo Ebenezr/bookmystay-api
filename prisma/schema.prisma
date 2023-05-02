@@ -23,7 +23,7 @@ model Guest {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   imgUrl      String?
-  nationalId  String?
+  nationalId  String        @unique
 
   @@index(fields: [name], type: Hash)
 }

@@ -11,7 +11,16 @@ router.post(
   '/guests',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // check if there is already an guest with the same email address
+      // check if there is already an user with the same email address
+      const existingUser = await prisma.guest.findUnique({
+        where: { nationalId: req.body.nationalId },
+      });
+      if (existingUser) {
+        // return an error if the email is already in use
+        return res
+          .status(400)
+          .json({ success: false, error: 'ID already in use' });
+      }
       const imgUrl = req.body.imgUrl ? `${req.body.imgUrl}` : null;
       const result = await prisma.guest.create({
         data: { ...req.body, imgUrl },
