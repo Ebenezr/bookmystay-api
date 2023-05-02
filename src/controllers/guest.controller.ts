@@ -11,7 +11,6 @@ router.post(
   '/guests',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log(req.body);
       // check if there is already an guest with the same email address
       const imgUrl = req.body.imgUrl ? `${req.body.imgUrl}` : null;
       const result = await prisma.guest.create({
@@ -149,8 +148,7 @@ router.get(
       const guests = await prisma.guest.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         skip: startIndex,

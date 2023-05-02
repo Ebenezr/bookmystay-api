@@ -2,13 +2,22 @@ import { NextFunction, Request, Response, Router } from 'express';
 import {
   Payment,
   PrismaClient,
-  ResavationStatus,
   Service,
+  ResavationStatus,
 } from '@prisma/client';
 import { Prisma, Reservation } from '@prisma/client';
 const prisma = new PrismaClient();
 const router = Router();
 import { Decimal } from 'decimal.js';
+
+// const ResavationStatus = {
+//   NEW: 'NEW',
+//   CONFIRMED: 'CONFIRMED',
+//   CHECKIN: 'CHECKIN',
+//   CANCELED: 'CANCELED',
+//   UNCONFIRMED: 'UNCONFIRMED',
+//   CHECKOUT: 'CHECKOUT',
+// };
 
 // ROUTES
 
@@ -94,30 +103,7 @@ router.patch(
       numericFields.forEach((field) => {
         if (data[field]) data[field] = parseFloat(data[field]);
       });
-      // const reservationData = {
-      //   ...data,
-      // };
 
-      // if (Service.length > 0) {
-      //   reservationData.Service = {
-      //     upsert: Service.map((service: Service) => ({
-      //       where: { id: service.id },
-      //       update: service,
-      //       create: service,
-      //     })),
-      //   };
-      // }
-
-      // // Upsert Payments
-      // if (Payment.length > 0) {
-      //   reservationData.Payment = {
-      //     upsert: Payment.map((payment: Payment) => ({
-      //       create: payment,
-      //       where: { id: payment.id },
-      //       update: {},
-      //     })),
-      //   };
-      // }
       const reservationId = parseInt(req.params.id);
 
       // Delete current Service and Payment records for the reservation
@@ -392,8 +378,7 @@ router.get(
         where: {
           Guest: {
             name: {
-              contains: guestname,
-              mode: 'insensitive',
+              contains: guestname.toLowerCase(),
             },
           },
         },
@@ -412,8 +397,7 @@ router.get(
         where: {
           Guest: {
             name: {
-              contains: guestname,
-              mode: 'insensitive',
+              contains: guestname.toLowerCase(),
             },
           },
         },

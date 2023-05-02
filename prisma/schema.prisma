@@ -81,6 +81,15 @@ model RoomType {
   Reservation Reservation[]
 }
 
+model MealPlan {
+  id          Int           @id @default(autoincrement())
+  name        String
+  rate        Decimal?      @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Reservation Reservation[]
+}
+
 model Bed {
   id        Int      @id @default(autoincrement())
   name      String
@@ -121,9 +130,12 @@ model Reservation {
   balance      Decimal?          @default(0)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  paidStatus   paidStatusEnum    @default(UNPAID)
-  Service      Service[]
-  Payment      Payment[]
+  mealPlan     MealPlan          @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  mealPlanId   Int
+
+  paidStatus paidStatusEnum @default(UNPAID)
+  Service    Service[]
+  Payment    Payment[]
 
   @@index([guestId])
   @@index([roomId])

@@ -94,8 +94,7 @@ router.get(
       const currencies = await prisma.curency.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
       });

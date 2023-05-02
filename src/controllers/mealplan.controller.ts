@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 const router = Router();
 
 // ROUTES
-// create new department
+// create new mealplan
 router.post(
-  '/departments',
+  '/mealplans',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      const result = await prisma.department.create({ data });
+      const result = await prisma.mealPlan.create({ data });
       res.status(201).json(result);
     } catch (error) {
       next(error);
@@ -19,43 +19,43 @@ router.post(
   },
 );
 
-// delete a department
+// delete a mealplan
 router.delete(
-  `/department/:id`,
+  `/mealplan/:id`,
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const department = await prisma.department.delete({
+      const mealplan = await prisma.mealPlan.delete({
         where: { id: Number(id) },
       });
-      res.status(204).json(department);
+      res.status(204).json(mealplan);
     } catch (error) {
       next(error);
     }
   },
 );
 
-// update department
+// update mealplan
 router.patch(
-  '/department/:id',
+  '/mealplan/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
       const data = req.body;
-      const department = await prisma.department.update({
+      const mealplan = await prisma.mealPlan.update({
         where: { id: Number(id) },
         data: data,
       });
-      res.status(202).json(department);
+      res.status(202).json(mealplan);
     } catch (error) {
       next(error);
     }
   },
 );
 
-// fetch all department paginated
+//  fetch all mealplan
 router.get(
-  '/departments',
+  '/mealplans',
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
@@ -63,19 +63,19 @@ router.get(
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
 
-      const department = await prisma.department.findMany({
+      const mealplans = await prisma.mealPlan.findMany({
         skip: startIndex,
         take: limit,
       });
 
-      const totalItems = await prisma.department.count();
+      const totalItems = await prisma.mealPlan.count();
 
       res.status(200).json({
         currentPage: page,
         totalPages: Math.ceil(totalItems / limit),
         itemsPerPage: limit,
         totalItems: totalItems,
-        items: department.slice(0, endIndex),
+        items: mealplans.slice(0, endIndex),
       });
     } catch (error) {
       next(error);
@@ -83,34 +83,31 @@ router.get(
   },
 );
 
-// ! fetch all departments no pagination
+// fetch single mealplan
 router.get(
-  '/departments/all',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const department = await prisma.department.findMany({});
-      res.status(200).json({ department });
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-// fetch single department
-router.get(
-  '/department/:id',
+  '/mealplan/:id',
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const department = await prisma.department.findUnique({
+      const mealplan = await prisma.mealPlan.findUnique({
         where: {
           id: Number(id),
         },
-        include: {
-          User: true,
-        },
       });
-      res.status(200).json(department);
+      res.status(200).json(mealplan);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
+// fetch all mealplan types no pagination
+router.get(
+  '/mealplans/all',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const mealplan = await prisma.mealPlan.findMany();
+      res.status(200).json({ mealplan });
     } catch (error) {
       next(error);
     }
@@ -119,16 +116,16 @@ router.get(
 
 // fetch guests by name
 router.get(
-  '/searchdepartment/:name',
+  '/searchmealplan/:name',
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name } = req.params;
+    const { name, mealplanType } = req.params;
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
       const limit = parseInt(req.query.limit as string, 10) || 10;
       const startIndex = (page - 1) * limit;
       const endIndex = startIndex + limit;
 
-      const departments = await prisma.department.findMany({
+      const mealplans = await prisma.mealPlan.findMany({
         where: {
           name: {
             contains: name.toLowerCase(),
@@ -138,18 +135,18 @@ router.get(
         take: limit,
       });
 
-      if (!departments) {
-        return res.status(404).json({ error: 'Guest not found' });
+      if (!mealplans) {
+        return res.status(404).json({ error: 'Mealplan not found' });
       }
 
-      const totalItems = await prisma.department.count();
+      const totalItems = await prisma.mealPlan.count();
 
       res.status(200).json({
         currentPage: page,
         totalPages: Math.ceil(totalItems / limit),
         itemsPerPage: limit,
         totalItems: totalItems,
-        items: departments.slice(0, endIndex),
+        items: mealplans.slice(0, endIndex),
       });
     } catch (error: any) {
       next(error);

@@ -94,8 +94,7 @@ router.get(
       const paymentmodes = await prisma.paymentMode.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
       });

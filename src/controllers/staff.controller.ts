@@ -180,8 +180,7 @@ router.get(
       const users = await prisma.user.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         skip: startIndex,

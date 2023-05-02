@@ -138,8 +138,7 @@ router.get(
       const roomTypes = await prisma.roomType.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         include: {

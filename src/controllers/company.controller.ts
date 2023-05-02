@@ -94,8 +94,7 @@ router.get(
       const companies = await prisma.company.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
       });

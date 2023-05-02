@@ -128,8 +128,7 @@ router.get(
       const amenitys = await prisma.amenity.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         skip: startIndex,

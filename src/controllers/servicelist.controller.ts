@@ -128,8 +128,7 @@ router.get(
       const rooms = await prisma.serviceList.findMany({
         where: {
           name: {
-            contains: code,
-            mode: 'insensitive',
+            contains: code.toLowerCase(),
           },
         },
         skip: startIndex,

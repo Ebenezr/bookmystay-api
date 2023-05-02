@@ -228,8 +228,7 @@ router.get(
       const rooms = await prisma.payment.findMany({
         where: {
           referenceId: {
-            contains: referenceId,
-            mode: 'insensitive',
+            contains: referenceId.toLowerCase(),
           },
         },
         skip: startIndex,

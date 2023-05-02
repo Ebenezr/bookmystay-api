@@ -125,8 +125,7 @@ router.get(
       const beds = await prisma.bed.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         skip: startIndex,

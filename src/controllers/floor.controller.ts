@@ -134,8 +134,7 @@ router.get(
       const floors = await prisma.floor.findMany({
         where: {
           name: {
-            contains: name,
-            mode: 'insensitive',
+            contains: name.toLowerCase(),
           },
         },
         include: {
