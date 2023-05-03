@@ -304,4 +304,63 @@ router.get(
   },
 );
 
+// todays sales
+router.get(
+  '/payments/revenue/payment-modes/today',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const today = new Date();
+      const startOfDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+      );
+      const endOfDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() + 1,
+      );
+
+      const paymentModes = [
+        'BANK',
+        'MPESA',
+        'CHEQUE',
+        'CREDIT',
+        'CASH',
+        'CARD',
+      ];
+
+      const revenueByPaymentMode = await Promise.all(
+        paymentModes.map(async (mode) => {
+          const revenue = await prisma.payment.aggregate({
+            where: {
+              PaymentMode: mode,
+              createdAt: {
+                gte: startOfDay,
+                lt: endOfDay,
+              },
+            },
+            _sum: {
+              amount: true,
+            },
+          });
+
+          return {
+            [mode]: revenue._sum?.amount ?? 0,
+          };
+        }),
+      );
+
+      // Merge the individual mode objects into a single object
+      const revenueObject = Object.assign({}, ...revenueByPaymentMode);
+
+      res.json({
+        todayRevenueByPaymentMode: revenueObject,
+      });
+    } catch (error: any) {
+      next(error);
+    }
+  },
+);
+
 export default router;

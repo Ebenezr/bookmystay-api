@@ -30,7 +30,7 @@ model Guest {
 
 model Room {
   id                 Int           @id @default(autoincrement())
-  Floor              Floor         @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  Floor              Floor         @relation(fields: [floorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   floorId            Int
   code               String
   description        String        @db.Text
@@ -39,7 +39,7 @@ model Room {
   maxOccupancy       Int
   availabilityStatus Boolean       @default(true)
   vacant             Boolean       @default(true)
-  RoomType           RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  RoomType           RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   roomTypeId         Int
   rate               Decimal       @default(0)
   Bed                Bed[]
@@ -65,8 +65,8 @@ model RoomAmenity {
   id        Int     @id @default(autoincrement())
   roomId    Int
   amenityId Int
-  room      Room    @relation(fields: [roomId], references: [id])
-  amenity   Amenity @relation(fields: [amenityId], references: [id])
+  room      Room    @relation(fields: [roomId], references: [id], onUpdate: Cascade)
+  amenity   Amenity @relation(fields: [amenityId], references: [id], onUpdate: Cascade)
 
   @@index([roomId])
   @@index([amenityId])
@@ -105,7 +105,7 @@ model Reservation {
   id           Int               @id @default(autoincrement())
   code         String
   status       ResavationStatus?
-  User         User              @relation(fields: [staffId], references: [id])
+  User         User              @relation(fields: [staffId], references: [id], onUpdate: Cascade)
   staffId      Int
   bookTime     DateTime          @default(now())
   checkIn      DateTime
@@ -114,11 +114,11 @@ model Reservation {
   childNumber  Int?
   taxName      String?
   note         String?           @db.Text
-  Room         Room              @relation(fields: [roomId], references: [id])
+  Room         Room              @relation(fields: [roomId], references: [id], onUpdate: Cascade)
   roomId       Int
-  RoomType     RoomType          @relation(fields: [roomTypeId], references: [id])
+  RoomType     RoomType          @relation(fields: [roomTypeId], references: [id], onUpdate: Cascade)
   roomTypeId   Int               @default(1)
-  Guest        Guest             @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  Guest        Guest             @relation(fields: [guestId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   guestId      Int
   roomTotal    Decimal?          @default(0)
   serviceTotal Decimal?          @default(0)
@@ -130,7 +130,7 @@ model Reservation {
   balance      Decimal?          @default(0)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  mealPlan     MealPlan          @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  mealPlan     MealPlan          @relation(fields: [mealPlanId], references: [id], onUpdate: Cascade)
   mealPlanId   Int
 
   paidStatus paidStatusEnum @default(UNPAID)
@@ -169,7 +169,7 @@ model Payment {
   PaymentMode   String?
   accountNumber String?
   referenceId   String?
-  Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   reservationId Int
   amount        Decimal
   createdAt     DateTime    @default(now())
@@ -181,7 +181,7 @@ model Service {
   type          String
   amount        Decimal
   quantity      Int         @default(0)
-  Reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  Reservation   Reservation @relation(fields: [reservationId], references: [id], onUpdate: Cascade)
   reservationId Int
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
@@ -191,7 +191,7 @@ model ServiceList {
   id            Int         @id @default(autoincrement())
   name          String
   rate          Decimal
-  ServiceType   ServiceType @relation(fields: [serviceTypeId], references: [id])
+  ServiceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onUpdate: Cascade)
   serviceTypeId Int
 }
 
@@ -208,7 +208,7 @@ model User {
   email                String        @unique
   password             String?
   phone                String
-  Department           Department?   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  Department           Department?   @relation(fields: [departmentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   departmentId         Int?
   activeStatus         Boolean       @default(true)
   createdAt            DateTime      @default(now())

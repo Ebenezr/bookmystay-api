@@ -10,17 +10,7 @@ const prisma = new PrismaClient();
 const router = Router();
 import { Decimal } from 'decimal.js';
 
-// const ResavationStatus = {
-//   NEW: 'NEW',
-//   CONFIRMED: 'CONFIRMED',
-//   CHECKIN: 'CHECKIN',
-//   CANCELED: 'CANCELED',
-//   UNCONFIRMED: 'UNCONFIRMED',
-//   CHECKOUT: 'CHECKOUT',
-// };
-
 // ROUTES
-
 // create new reservation[Service/Payment]
 router.post(
   '/reservations',
@@ -173,14 +163,12 @@ router.get(
           createdAt: 'desc',
         },
         where: {
-          NOT: {
-            AND: [
-              { paidStatus: 'PAID' },
-              {
-                OR: [{ status: 'CHECKOUT' }, { status: 'CANCELED' }],
-              },
-            ],
-          },
+          NOT: [
+            { status: 'CANCELED' },
+            {
+              AND: [{ paidStatus: 'PAID' }, { status: 'CHECKOUT' }],
+            },
+          ],
         },
         skip: startIndex,
         take: limit,
@@ -202,7 +190,16 @@ router.get(
         },
       });
 
-      const totalItems = await prisma.reservation.count();
+      const totalItems = await prisma.reservation.count({
+        where: {
+          NOT: [
+            { status: 'CANCELED' },
+            {
+              AND: [{ paidStatus: 'PAID' }, { status: 'CHECKOUT' }],
+            },
+          ],
+        },
+      });
 
       res.json({
         currentPage: page,
