@@ -238,7 +238,7 @@ model Department {
 model Company {
   id         Int     @id @default(autoincrement())
   name       String
-  email      String
+  email      String  @unique
   phone      String
   address    String
   regNo      String?

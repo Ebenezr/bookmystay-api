@@ -27,6 +27,26 @@ export async function seed(prisma: PrismaClient) {
   } else {
     console.log('Superuser already exists.');
   }
+
+  const companyEmail = 'roomsoft@info.ke';
+
+  const existingUser = await prisma.company.findUnique({
+    where: { email: companyEmail },
+  });
+  if (!existingUser) {
+    await prisma.company.create({
+      data: {
+        name: 'Roomsoft',
+        email: companyEmail,
+        address: 'Moi Avenue Nairobi',
+        phone: '+254706731810',
+        regNo: 'A0151515545S',
+      },
+    });
+    console.log('Company created.');
+  } else {
+    console.log('Company already exists.');
+  }
 }
 
 // Call the seed function with a new PrismaClient instance if the file is executed directly
