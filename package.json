@@ -5,14 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --config nodemon.json src/index.ts",
-    "prisma": "prisma",
-    "generate": "prisma generate",
     "build": "tsc",
-    "prisma:migrate": "npx prisma migrate dev --name init",
-    "prestart": "yarn prisma:migrate && yarn generate && yarn seed && yarn build",
-    "start": "yarn seed && node dist/index.js",
-    "seed": "ts-node src/seed.ts",
-    "prepare": "husky install"
+    "start": "node dist/index.js"
   },
   "author": "Ebenezr",
   "license": "MIT",
