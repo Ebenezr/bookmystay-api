@@ -135,7 +135,7 @@ router.patch(
           where: { id: req.body.roomId },
           data: { vacant: false },
         });
-      } else if (data.status === 'CHECKOUT') {
+      } else if (data.status === 'CHECKOUT' || data.status === 'CANCELED') {
         await prisma.room.update({
           where: { id: req.body.roomId },
           data: { vacant: true },
