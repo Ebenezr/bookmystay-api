@@ -31,7 +31,7 @@ router.post(
 );
 
 router.get('/images/:imageName', (req: Request, res: Response) => {
-  res.sendFile(path.resolve(process.cwd(), 'uploads', req.params.imageName));
+  res.sendFile(path.resolve(process.cwd(), '../uploads', req.params.imageName));
 });
 
 export default router;
