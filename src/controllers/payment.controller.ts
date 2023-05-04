@@ -287,16 +287,14 @@ router.get(
           });
 
           return {
-            [mode]: revenue._sum?.amount ?? 0,
+            name: mode,
+            value: Number(revenue._sum?.amount) ?? 0,
           };
         }),
       );
 
-      // Merge the individual mode objects into a single object
-      const revenueObject = Object.assign({}, ...revenueByPaymentMode);
-
       res.json({
-        lastThirtyDaysRevenueByPaymentMode: revenueObject,
+        lastThirtyDaysRevenueByPaymentMode: revenueByPaymentMode,
       });
     } catch (error: any) {
       next(error);
@@ -346,16 +344,14 @@ router.get(
           });
 
           return {
-            [mode]: revenue._sum?.amount ?? 0,
+            name: mode,
+            value: Number(revenue._sum?.amount) ?? 0,
           };
         }),
       );
 
-      // Merge the individual mode objects into a single object
-      const revenueObject = Object.assign({}, ...revenueByPaymentMode);
-
       res.json({
-        todayRevenueByPaymentMode: revenueObject,
+        todayRevenueByPaymentMode: revenueByPaymentMode,
       });
     } catch (error: any) {
       next(error);
