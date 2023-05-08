@@ -698,6 +698,117 @@ router.get(
   },
 );
 
+// mealplan report
+router.get(
+  '/meals/:date/:mealType',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { date, mealType } = req.params;
+      const mealDate = new Date(date);
+
+      if (isNaN(mealDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid date string' });
+      }
+
+      if (!['breakfast', 'lunch', 'dinner'].includes(mealType.toLowerCase())) {
+        return res.status(400).json({ message: 'Invalid meal type' });
+      }
+
+      const validMealPlans =
+        mealType.toLowerCase() === 'breakfast'
+          ? ['Breakfast', 'HalfBoard', 'FullBoard']
+          : mealType.toLowerCase() === 'lunch'
+          ? ['FullBoard']
+          : ['HalfBoard', 'FullBoard'];
+
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+
+      const meals = await prisma.reservation.findMany({
+        where: {
+          AND: [
+            {
+              checkIn: {
+                lte: mealDate,
+              },
+            },
+            {
+              checkOut: {
+                gte: mealDate,
+              },
+            },
+            {
+              mealPlan: {
+                name: {
+                  in: validMealPlans,
+                },
+              },
+            },
+          ],
+        },
+        select: {
+          code: true,
+          Guest: {
+            select: {
+              id: true,
+              name: true,
+              phone1: true,
+            },
+          },
+          Room: {
+            select: {
+              code: true,
+            },
+          },
+          adultNumber: true,
+          childNumber: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip: startIndex,
+        take: limit,
+      });
+
+      const totalItems = await prisma.reservation.count({
+        where: {
+          AND: [
+            {
+              checkIn: {
+                lte: mealDate,
+              },
+            },
+            {
+              checkOut: {
+                gte: mealDate,
+              },
+            },
+            {
+              mealPlan: {
+                name: {
+                  in: validMealPlans,
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        itemsPerPage: limit,
+        totalItems: totalItems,
+        items: meals.slice(0, endIndex),
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+);
+
 export default router;
 
 function getStartOfWeek(date: Date): Date {
