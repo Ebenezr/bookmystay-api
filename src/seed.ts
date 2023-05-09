@@ -38,9 +38,12 @@ export async function seed(prisma: PrismaClient) {
       data: {
         name: 'Roomsoft',
         email: companyEmail,
-        address: 'Moi Avenue Nairobi',
+        address: 'Construst House',
         phone: '+254706731810',
         regNo: 'A0151515545S',
+        logoUrl: '0741565452',
+        entityType: '1st Floor Construst House',
+        website: 'Moi Avenue, Nairobi',
       },
     });
     console.log('Company created.');
