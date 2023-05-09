@@ -3,7 +3,7 @@ import { exec as cpExec } from 'child_process';
 import { parse } from 'pg-connection-string';
 import { config as loadEnvConfig } from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import { resetDatabase } from '../reset';
+import { partialReset, reservationsReset, resetDatabase } from '../reset';
 import { isSuperAdmin } from '../middleware/isSuperAdmin.middleware';
 import Docker from 'dockerode';
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
@@ -110,6 +110,22 @@ router.post(
 router.post('/reset-database', isSuperAdmin, async (req, res) => {
   try {
     await resetDatabase(prisma);
+    res.status(200).json({ message: 'Database reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset database', details: error });
+  }
+});
+router.post('/partial-reset-database', isSuperAdmin, async (req, res) => {
+  try {
+    await partialReset(prisma);
+    res.status(200).json({ message: 'Database reset successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reset database', details: error });
+  }
+});
+router.post('/reset-reservation-data', isSuperAdmin, async (req, res) => {
+  try {
+    await reservationsReset(prisma);
     res.status(200).json({ message: 'Database reset successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to reset database', details: error });
