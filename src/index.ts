@@ -15,7 +15,7 @@ app.use(express.json());
 // load environment variables
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 app.get("/", (req: Request, res: Response) => {
   res.json({ status: "API is running on /api" });

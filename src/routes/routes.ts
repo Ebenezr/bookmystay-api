@@ -20,6 +20,8 @@ import paymentRouter from "../controllers/payment.controller";
 import amenityRouter from "../controllers/amenity.controller";
 import backupRouter from "../controllers/backup.controller";
 import discountRouter from "../controllers/discount.controller";
+import multerRouter from '../middleware/multer.middleware';
+import mealplanRouter from '../controllers/mealplan.controller';
 
 const router = Router();
 
@@ -43,5 +45,7 @@ router.use("/api/v1", paymentRouter);
 router.use("/api/v1", amenityRouter);
 router.use("/api/v1", backupRouter);
 router.use("/api/v1", discountRouter);
+router.use('/api/v1', multerRouter);
+router.use('/api/v1', mealplanRouter);
 
 export default router;
